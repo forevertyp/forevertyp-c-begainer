@@ -1,0 +1,32 @@
+//用数组计入随机输入的范围为[0,9]的10个数字，输出每个数字的个数
+#include<stdio.h>
+
+int main(){
+	//输入部分 
+	int number[10];
+	int x;
+	int cnt = 0;
+	scanf("%1d",&x);
+	while(x!=-1&&x<10&&x>=0){
+		number[cnt] = x;
+		if(cnt==9)break;
+		cnt++;
+		scanf("%1d",&x);
+	}
+	
+	//输出部分 
+	int count_number=0;
+	for(int i = 0;i < 10;i++){
+		
+		for(int j= 0;j<10;j++){
+			if(number[j]==i){
+				count_number++;
+			}
+		}
+		printf("%d的个数为%d\n",i,count_number);
+		count_number = 0;
+	}
+	
+
+	return 0;
+}
