@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
 	struct Record *head = NULL;
-	menu(head);  //²Ù×÷½çÃæ 
+	menu(head);  //æ“ä½œç•Œé¢ 
 	return 0;
 }
 
@@ -11,17 +11,19 @@ void menu(struct Record *head){
 	int flag = 1;
 	while(flag){
 	int choice;
-		printf("\t------²Ù×÷²Ëµ¥------\t\n");
-		printf("\t1.Â¼ÈëÑ§Ô±ĞÅÏ¢\t\n");
-		printf("\t2.Í³¼Æ·ÖÎöĞÅÏ¢\t\n");
-		printf("\t3.±£´æÖÁÎÄ¼ş\t\n");
-		printf("\t4.´ÓÎÄ¼şÖĞ¶ÁÈ¡ĞÅÏ¢\t\n");
-		printf("\t5.ĞŞ¸ÄÑ§Ô±³É¼¨\t\n");
-		printf("\t6.²é¿´Ñ§Ô±ĞÅÏ¢\t\n");
-		printf("\t7.É¾³ıÑ§Ô±ĞÅÏ¢\t\n");
-		printf("\t0.ÍË³ö³ÌĞò\t\n");                           
+		printf("\t------æ“ä½œèœå•------\t\n");
+		printf("\t1.å½•å…¥å­¦å‘˜ä¿¡æ¯\t\n");
+		printf("\t2.ç»Ÿè®¡åˆ†æä¿¡æ¯\t\n");
+		printf("\t3.ä¿å­˜è‡³æ–‡ä»¶\t\n");
+		printf("\t4.ä»æ–‡ä»¶ä¸­è¯»å–ä¿¡æ¯\t\n");
+		printf("\t5.ä¿®æ”¹å­¦å‘˜æˆç»©\t\n");
+		printf("\t6.æŸ¥çœ‹å­¦å‘˜ä¿¡æ¯\t\n");
+		printf("\t7.åˆ é™¤å­¦å‘˜ä¿¡æ¯\t\n");
+		printf("\t8.å­¦å‘˜ä¿¡æ¯æ’åº\t\n");
+		printf("\t9.ä¸åˆæ ¼å­¦å‘˜\t\n");
+		printf("\t0.é€€å‡ºç¨‹åº\t\n");                           
 		printf("\t--------------------\t\n");
-		printf("\tÇëÊäÈëÄãµÄÑ¡Ïî\t\n");
+		printf("\tè¯·è¾“å…¥ä½ çš„é€‰é¡¹\t\n");
 		scanf("%d",&choice);
 		
  		switch(choice){
@@ -47,9 +49,16 @@ void menu(struct Record *head){
 			case 7:
 				head = delete_info(head);
 				break;
+			case 8:
+				bubbleSort_records(head);
+				show(head);
+				break;
+			case 9:
+				find_fail_student(head);
+				break; 
 			case 0:
-				printf("ÄãÕæµÄÒªÍË³öÂğ\n");
-				printf("ÊÇÇëÊäÈë' y/ Y'£¬²»ÊÇÇëÊäÈë' n/ N'\n");
+				printf("ä½ çœŸçš„è¦é€€å‡ºå—\n");
+				printf("æ˜¯è¯·è¾“å…¥' y/ Y'ï¼Œä¸æ˜¯è¯·è¾“å…¥' n/ N'\n");
 				char option;
 				scanf(" %c",&option);
 				if(option=='n'||option=='N'){
@@ -61,7 +70,7 @@ void menu(struct Record *head){
 				}
 				break;
 			default:
-				printf("ÇëÊäÈëÕıÈ·µÄÑ¡Ïî£¨0-7£©£º\n");
+				printf("è¯·è¾“å…¥æ­£ç¡®çš„é€‰é¡¹ï¼ˆ0-7ï¼‰ï¼š\n");
 				break;
 		 }
 	}	
