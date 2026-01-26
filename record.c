@@ -294,3 +294,62 @@ struct Record *delete_info(struct Record *head){
 	}
 	return head;
 };
+
+void swap_data(struct Record *a,struct Record *b){
+	//交换分数
+	int temp_score;
+	temp_score = a->score;
+	a->score = b->score;
+	b->score = temp_score;
+	
+	//交换姓名 
+	char temp_name[20];
+	strcpy(temp_name,a->name);
+	strcpy(a->name,b->name);
+	strcpy(b->name,temp_name); 
+	
+	//交换时间
+	long temp_time;
+	temp_time = a->time; 
+	a->time = b->time;
+	b->time = temp_time;	 
+}
+
+void bubbleSort_records(struct Record *head){
+	if(head==NULL||head->next==NULL){
+		printf("人数不足，无需排序\n"); 
+		return;
+	} 
+	
+	struct Record *p,*q;
+	int swapped;
+	for(p=head;p!=NULL;p=p->next){
+		swapped = 0;
+		for(q=head;q->next!=NULL;q=q->next){
+			if(q->score<q->next->score){
+				swap_data(q,q->next);
+				swapped = 1;
+			}
+		}
+		if(!swapped)break;
+	}
+	printf("学员成绩已经排序完成（由高到低）\n");	
+		
+}
+
+void find_fail_student(struct Record *head){
+	if(head==NULL){
+		printf("暂无数据\n");
+		return;
+	}
+	struct Record *p = head;
+	int count=0;
+	while(p!=NULL){
+		if(p->score<90){
+			printf("姓名：%s\t|分数：%d\n",p->name,p->score);
+			count++;
+		}
+		p=p->next;
+	}
+	printf("共有%d人不及格\n",count);
+} 
