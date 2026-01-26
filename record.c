@@ -353,3 +353,30 @@ void find_fail_student(struct Record *head){
 	}
 	printf("共有%d人不及格\n",count);
 } 
+
+void search_by_name(struct Record *head){
+	if(head==NULL){
+		printf("暂无数据\n");
+		return;
+	}
+	
+	struct Record *tp = head;
+	int count=0;
+	int cnt = 0;
+	char target_name[20];
+	
+	printf("请输入要查询的学员的姓名:"); 
+	scanf("%s",target_name);
+	
+	while(tp!=NULL){
+		cnt++;
+		if(strcmp(target_name,tp->name)==0){
+			count++;
+			printf("记录【%d】: 姓名：%s\t\t|分数：%d\t\t|时间：%s",cnt,tp->name,tp->score,ctime(&(tp->time)));
+		} 
+		tp=tp->next;
+	}
+	if(count==0){
+		printf("暂无学员：[ %s ]的信息\n",target_name);
+	}
+}
