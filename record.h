@@ -6,25 +6,24 @@
 #include<unistd.h>   //sleep()
 #include<time.h>	//time() ctime()
 #include<string.h>  //strcmp() 
-#include<stdlib.h> //ÓÃÓÚÒıÈëmalloc()º¯Êı 
+#include<stdlib.h> //ç”¨äºå¼•å…¥malloc()å‡½æ•° 
 
-//ÓÃÓÚ¼ÇÂ¼Ñ§Éú³É¼¨µÄ½á¹¹Ìå 
+//ç”¨äºè®°å½•å­¦ç”Ÿæˆç»©çš„ç»“æ„ä½“ 
 struct Record{
-	int score;  //³É¼¨ 
-	char name[20];  //ĞÕÃû 
-	time_t time;  //Ê±¼ä´Á 
-	struct Record *next;  //Á´±íÖ¸ÕëÓò 
+	int score;  //æˆç»© 
+	char name[20];  //å§“å 
+	time_t time;  //æ—¶é—´æˆ³ 
+	struct Record *next;  //é“¾è¡¨æŒ‡é’ˆåŸŸ 
 }; 
 
-struct Record *add_one_node(struct Record *head);//Ìí¼ÓÒ»¸ö½ÚµãÍ·²å 
-struct Record *get_info(struct Record *head);   //Â¼ÈëĞÅÏ¢º¯ÊıÍ· 
-struct Record *delete_node(struct Record *head);//É¾³ıÒ»¸ö¶ÔÓ¦Ñ§Ô± 
-struct Record *delete_info(struct Record *head);//É¾³ıÑ§Ô± 
-void statistic_analysis(struct Record *head); //Í³¼Æ²¢·ÖÎöĞÅÏ¢ º¯ÊıÍ· 
-void save_to_file(struct Record *head);  //½«ĞÅÏ¢±£´æµ½ÎÄ¼şº¯ÊıÍ· 
-struct Record* load_from_file();//´ÓÎÄ¼şÖĞ¶ÁÈ¡ĞÅÏ¢º¯ÊıÍ· 
-void find_and_modify(struct Record *head);//ĞŞ¸Ä³É¼¨º¯ÊıÍ· 
-void show(struct Record *head);//Õ¹Ê¾º¯ÊıÍ· 
-void free_list(struct Record *head);//Çå³ıÄÚ´æ 
-void menu(struct Record *head);//²Ëµ¥º¯ÊıÍ· 
-
+struct Record *add_one_node(struct Record *head);//æ·»åŠ ä¸€ä¸ªèŠ‚ç‚¹å¤´æ’ 
+struct Record *get_info(struct Record *head);   //å½•å…¥ä¿¡æ¯å‡½æ•°å¤´ 
+struct Record *delete_node(struct Record *head);//åˆ é™¤ä¸€ä¸ªå¯¹åº”å­¦å‘˜ 
+struct Record *delete_info(struct Record *head);//åˆ é™¤å­¦å‘˜ 
+void statistic_analysis(struct Record *head); //ç»Ÿè®¡å¹¶åˆ†æä¿¡æ¯ å‡½æ•°å¤´ 
+void save_to_file(struct Record *head);  //å°†ä¿¡æ¯ä¿å­˜åˆ°æ–‡ä»¶å‡½æ•°å¤´ 
+struct Record* load_from_file();//ä»æ–‡ä»¶ä¸­è¯»å–ä¿¡æ¯å‡½æ•°å¤´ 
+void find_and_modify(struct Record *head);//ä¿®æ”¹æˆç»©å‡½æ•°å¤´ 
+void show(struct Record *head);//å±•ç¤ºå‡½æ•°å¤´ 
+void free_list(struct Record *head);//æ¸…é™¤å†…å­˜ 
+void menu(struct Record *head);//èœå•å‡½æ•°å¤´ 
