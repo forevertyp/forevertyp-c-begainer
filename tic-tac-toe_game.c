@@ -1,34 +1,35 @@
-//tic-tac-toeÓÎÏ·
+//tic-tac-toeæ¸¸æˆ
 #include<stdio.h>
 
 int main(){
 	const int size =  3;
 	int board[size][size];
 	int i,j;
-	int numOf_X;
-	int numOf_O;
-	int ret = -1;  //-1Æ½¾Ö 1£ºxÊ¤Àû 0:OÊ¤Àû 
+	int numOfX;
+	int numOfO;
+	int ret = -1;  //-1å¹³å±€ 1ï¼šxèƒœåˆ© 0:Oèƒœåˆ© 
+	 
 	
-	//ÊäÈë 
+	//è¾“å…¥ 
 	for(i=0;i<size;i++)
 		for(j=0;j<size;j++){
 			while(1){
-				if(scanf("%d",&board[i][j]!=1)){
-					printf("ÇëÊäÈë0 or 1\n");
+				if(scanf("%d",&board[i][j])!=1){
+					printf("è¯·è¾“å…¥æ•°å­—0 or 1\n");
 					while(getchar()!='\n');
 					continue; 
 				}
 				
-				if(board[i][j]!=0||board[i][j]!=1){
-					printf("ÇëÊäÈë0 or 1\n");
+				if(board[i][j]!=0&&board[i][j]!=1){
+					printf("è¾“å…¥äº†ä¸æ­£ç¡®çš„æ•°æ•°å­—ï¼Œè¯·è¾“å…¥0 or 1\n");
 					scanf("%d",&board[i][j]);
 				}
 				else break;
 			}
 		}
+		printf("è¾“å…¥å®Œæˆ\n");	
 			
-			
-	//¼ì²éĞĞºÍÁĞ 
+	//æ£€æŸ¥è¡Œå’Œåˆ— 
 	for(i = 0;i<size && ret == -1;i++){
 		numOfO = numOfX = 0;
 		for(j=0;j<size;j++){
@@ -43,6 +44,7 @@ int main(){
 		}else if(numOfX == size){
 			ret == 1;
 		}
+	}
 	for(i = 0;i<size && ret == -1;i++){
 		numOfO = numOfX = 0;
 		for(j=0;j<size;j++){
@@ -57,10 +59,11 @@ int main(){
 		}else if(numOfX == size){
 			ret == 1;
 		}
-	//¼ì²é¶Ô½ÇÏß 
-		//Õı¶Ô½ÇÏß 
+	}
+	//æ£€æŸ¥å¯¹è§’çº¿ 
+		//æ­£å¯¹è§’çº¿ 
+	numOfO=numOfX=0;
 	for(i = 0;i<size&&ret == -1;i++){
-		numOfO=numOfX=0;
 		if(board[i][i]==1){
 			numOfX++;
 		}else{
@@ -68,28 +71,27 @@ int main(){
 		}
 		if(numOfO==size){
 			ret == 0;
-		}else if(numOfx == size){
+		}else if(numOfX == size){
 			ret = 1;
 		}
 	}
-		//¸º¶Ô½ÇÏß
+		//è´Ÿå¯¹è§’çº¿
 	for(i = 0;i<size&&ret == -1;i++){
-		numOfO=numOfX=0;
 		if(board[i][(size-1)-i]==1){
 			numOfX++;
 		}else{
 			numOfO++;
 		}
 		if(numOfO==size){
-			ret == 0;
-		}else if(numOfx == size){
+			ret = 0;
+		}else if(numOfX == size){
 			ret = 1;
 		}
 	}	
-	//Êä³ö½á¹û 
+	//è¾“å‡ºç»“æœ 
 	switch(ret){
 		case -1:
-			printf("Æ½¾Ö\n");
+			printf("å¹³å±€\n");
 			break;
 		case 0:
 			printf("Oplayer win\n");
@@ -98,7 +100,9 @@ int main(){
 			printf("Xplayer win\n");
 			break;
 	}
+	
 	return 0;
 }
+
 
  
