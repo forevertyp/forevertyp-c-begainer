@@ -28,4 +28,5 @@ void free_list(struct Record *head);//清除内存
 void statistic_analysis(struct Record *head); //统计并分析信息 函数头 
 void bubbleSort_records(struct Record *head);//把数据进行排序 
 void find_fail_student(struct Record *head);//查找不合格的学员，并打印 
+void search_by_name(struct Record *head);//按名字查找学员记录 
 void menu(struct Record *head);//菜单函数头 
