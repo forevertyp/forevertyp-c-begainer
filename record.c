@@ -1,382 +1,497 @@
 #include "record.h"
-struct Record *add_one_node(struct Record *head){
-	//申请内存 
-	struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
-	//检验 
-	if(newNode == NULL){
-		printf("内存分配失败！\n");
-		return head; 
-	}
-	
-	//填入数据 
-	printf("请输入姓名：\n");
-	scanf("%19s",newNode->name); //19控制宽度 确保'\0'的位置 
-	
-	//验证成绩输入 
-	printf("请输入成绩：（0-100）\n");
-	do{// 
-		if(scanf("%d",&newNode->score)!= 1|| newNode->score>100||newNode->score<0){
-			printf("非法输入，请重新输入\n");	
+
+
+/*
+功能函数
+一、创建功能
+要保证有一个链表 
+二、基础功能 
+//添加 1.（从无到有） 2.从少到多
+//删除 1.（头删除）（） 
+//修改 1.（修改name,score） 2.时间不改 
+//查询	1.具体记录
+//显示 
+三、数据利用 
+//数据保存 
+//数据分析
+四、程序安全 
+//安全（鲁棒函数）用于保证程序和逻辑不崩盘
+*/
+
+
+//==========================================================
+				//安全功能 
+	//安全输入int
+void safe_input_int(int *p,int min,int max){
+	while(1){
+		if(scanf("%d",p)!=1){
+			printf("非法输入，请输入整数");
+			while(getchar()!='\n');
+			continue; 
 		}
-		else break;
-	} while(1);
-	
-	
-	//记录时间戳 <time.h> 
-	newNode->time = time(NULL);
-	printf("录入中...请等待\n");
-	sleep(2);
-	
-	//指针域
-	newNode->next = NULL; 
-	
-	//挂载
-	if(head == NULL){
-		return newNode;
-	}else{
-		//temp结构体指针，移动至链表的最后一个节点 
-		//*不能拿head本身来移动，要不然链表会被摧毁，temp的使用是为了预防这种情况 
-		struct Record *temp = head;
-		while(temp->next!=NULL)
-		temp=temp->next;
-		//循环完后temp指向链表的最后一个节点 
-		temp->next = newNode;//挂上去
-		return head; 
-	}
-	  
-}
-//实现多个输入 
-
-struct Record *get_info(struct Record *head){ 
-	int count;
-	printf("请输入你要录入的学员的个数(0-100)：\n");
-	scanf("%d",&count);
-	struct Record *tp; 
-	for(int i = 0;i<count;i++){
-	//
-	head = add_one_node(head);
-	tp = head;
-	//
-	while(tp->next != NULL)tp=tp->next;
-	printf("记录【%d】: 姓名：%s\t\t|分数：%d\t\t|时间：%s",i+1,tp->name,tp->score,ctime(&(tp->time)));
-	}
-	return head;
-}
-//数据统计分析：
-void statistic_analysis(struct Record *head){
-	
-	if(head == NULL){
-		printf("暂无数据进行统计分析\n");
-		return;
-	}
-	//数据设置 
-	double sum = 0;
-	int count = 0;//总人数
-	int cnt = 0; 
-	int max = -1;
-	char top_name[20];
-	double average = 0; 
-	struct Record *p = head;
-	
-	//处理数据 
-	while(p!=NULL){
-		//求和 
-		sum+= p->score;
-		//求最大，找状元 
-		if(p->score>max){
-			max = p->score;
-			//把这一轮中的最高分数的人的姓名也记下来，可以简化流程，链表不方便得到j
-			//如果不这么做而是用计数器的方法就要在遍历一遍链表 
-			strcpy(top_name,p->name);
+		if(*p<min || *p > max){
+			printf("输入超出范围（%d-%d）\n",min,max);
+			while(getchar()!='\n');
+			continue;
 		}
-		count++;//用于记录人数，平均成绩
-		//不合格人数
-		if(p->score<90)
-		cnt++;
-		//假设我要记下这些不合格的人的具体信息，我就需要在建一个不合格的链表用于输出（这样更方便一点）
-		p=p->next; 
+		break;
 	}
-	
-	//平均分 
-	average = sum / count;//开始忘记改了还是 /3.0 
-	
-	//输出 
-	printf("\n[统计结果]\n");
-	printf("学员平均分：%3lf\n",average);
-	printf("状元：%s |分数：%d\n",top_name,max);
-	printf("不合格人数：%d\n",cnt); 
-	printf("[----------------------]\n");
-}
+} 
 
-
-//固化信息 
-void save_to_file(struct Record *head){
-	//存入文件，并决定计入模式 
-	FILE *fp = fopen("students.txt","w");
-	
-	//检验 
-	if(fp == NULL){
-		printf("文件打开失败\n");
-		return; 
-	}
-	
-	//存数据的过程 
-	struct Record *p = head;
-	while(p != NULL){
-		fprintf(fp,"%s %d %ld\n",p->name,p->score,(long)(p->time));
-		p=p->next;
-	}
-	
-	//关闭文件 
-	fclose(fp);
-	printf("---数据已经保存到硬盘---\n"); 
-	
-}
-
-//读取文件
-//实现逻辑：重建火车，每读到一行 ，就得malloc一个节点，并把它挂载到末尾 
-//实现功能：把从文件内读到的东西存入到新建的火车内 
-struct Record* load_from_file(){
-	//决定读取的文件 
-	FILE *fp = fopen("students.txt","r");
-	
-	//检验 
-	if(fp==NULL){
-		printf("暂时无历史数据。\n");
-		return NULL; 
-	}
-	
-	//重建过程 
-	struct Record *head = NULL,*tail = NULL; //使用栈的思维，简化遍历次数 
-	char name[20];  
-	int score;
-	long t;
-	//发现数据，立刻申请新车厢 
-	while(fscanf(fp,"%s %d %ld\n",name,&score,&t)!= EOF){
-		struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
-		strcpy(newNode->name,name);
-		newNode->score = score;
-		newNode->time = (time_t)t;
-		newNode->next = NULL;
-		
-		//挂载逻辑 
-		if(head == NULL){
-			head = newNode; //第一节车厢
-			tail = newNode; //第一节车厢 
-		}else{
-			tail->next = newNode; //挂载 
-			tail = newNode;  //更新尾巴位置 
-		} 
-	}
-	
-
-	fclose(fp);
-	
-	return head;//返回值 
-	
-}
-
-//修改：通过确定姓名来修改 
-void find_and_modify(struct Record *head){
-	//检查链表 
+	//检查链表是否为空
+int empty(struct Record *head){
+	int ret=0;
 	if(head==NULL){
-		printf("当前无任何学员信息\n");
-		return; 
-	} 
-	//输入名字 
-	char targetName[20];
-	//提示性输入 
-	printf("请输入学员的姓名：");
-	scanf("%s",targetName);
-	
-	struct Record *p = head;
-	while(p!=NULL){
-		//strcmp(const *char1,const *char2)  0是相同 1是不同 
-		if(strcmp(p->name,targetName)==0){
-			printf("找到%s！当分数是%d\n",p->name,p->score);
-			//改分数 
-			printf("请输入新的分数：\n");
-			scanf("%d",&p->score);
-			//改时间
-			p->time = time(NULL); 
-			break;
-	 	}else{
-	 		p = p->next; 
-	 	}
+		printf("链表不存在，请重试\n");
+		ret = 1;
 	}
-	//跑完后还没找到发出提示 
-	if(!p) printf("查无此人，请检查是否输入正确\n");
-
+	return ret;
 }
 
-
-//遍历展示 ctime()函数自带\n 
-//链表遍历的逻辑最基础 
-void show(struct Record *head){
-	struct Record*p = head;
-	while(p!= NULL){
-		printf("姓名：%s |分数：%d |时间：%s",p->name,p->score,ctime(&(p->time)));
-		p=p->next;
+	//检查malloc内存分配是否成功
+int check_malloc(struct Record *node){
+	int ret = 0;
+	if(node==NULL){
+		printf("内存未分配成功\n");
+		ret = 1;
 	}
-}
+	return ret; 
+} 
 
-
-void free_list(struct Record *head){
+	//释放内存 
+void free_linkList(struct Record *head){
 	struct Record *p;
-	while(head!=NULL){
+	while(head){
 		p = head;
 		head = head->next;
 		free(p);
-	} 
+		p=NULL;
+	}
+} 
+
+//=============================================================
+				//创建链表
+//创建 
+struct Record * create_linkList(){
+	struct Record *head = NULL;
+	return head;
+}				
+		//有待升级，现在是无头节点版本 
+//=============================================================
+				//功能函数（无头节点版本） 
+//添加功能 =======================================
+	
+	//节点赋值函数
+struct Record* node_assignment(struct Record *newNode){
+	
+	printf("请输入新添加学员的姓名："); 
+	scanf("%19s",newNode->name);
+	
+	printf("请输入新添加学员的成绩：");
+	safe_input_int(&newNode->score,0,100);
+	
+	newNode->time = time(NULL);
+	printf("正在录入中....\n");
+	sleep(2); 
+	
+	//忘记给指针域赋值了导致一直报错 
+	newNode->next = NULL; 
+	
+	return newNode;
+	
+} 
+	//加一个节点(尾插)
+struct Record * tail_add_one_node(struct Record *head){
+	
+	//申请新的节点
+	struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
+	
+	//！！！！！忘记对malloc做空处理 !!!!!!!!封装的时候，忘记加回来了
+	 if(check_malloc(newNode))return NULL;
+		//为新的节点赋值
+	newNode=node_assignment(newNode);
+	//挂载新节点
+	struct Record *p=head;
+	if(head == NULL) {
+		head = newNode;
+	}else{
+		while(p->next!=NULL)p=p->next;
+		p->next = newNode; 
+	}
+	
+	//需要在内部输出新节点的信息吗？//不需要还是保证函数的纯洁性好一点 
+	return head;
+}
+		//头插 
+struct Record *head_add_one_node(struct Record *head){
+	struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
+	if(check_malloc(newNode))return NULL;
+	
+	newNode = node_assignment(newNode);
+	
+	struct Record *p=head;
+	if(head == NULL) {
+		head = newNode;
+	}else{
+		newNode->next = head;
+		head = newNode;
+	}
+	
+	return head;
 }
 
-//实现功能：删除节点 
-//准备工作：确定删除的节点 移动到地方 
-struct Record *delete_node(struct Record *head){
-	char target[20];
-	printf("请输入要退学的学员姓名：\n");
-	scanf("%s",target);
+	//批量添加 
+		//选择添加模式
+int add_choice(){
+	int choice=1;
+	printf("请选择添加方式："
+	"头插（1）  尾插（2）\n");
+	safe_input_int(&choice,1,2);
+	return choice; 
+}
+
+struct Record *batch_add_node(struct Record *head){
+	int add_times;
+	printf("请输入你要添加的学员的个数：");
+	safe_input_int(&add_times,0,100);
+	int choice = add_choice();
+	struct Record *p,*tail;
+	switch(choice){
+		case 1:
+			for(int i = 0;i<add_times;i++){
+				head = head_add_one_node(head);//千万记得把返回值传给head,更新head 
+				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",head->name,head->score,ctime(&(head->time)));
+			}
+			break;
+		case 2:
+			for(int i = 0;i<add_times;p=p->next,i++){
+				head = tail_add_one_node(head);
+				//这样太低效了，应该用tail记录尾巴指针避免重复遍历 
+				//p = head;
+				//while(p->next)p=p->next;
+				//这样做
+				if(tail==NULL)tail = head;
+				else tail = tail->next;
+				//改动代码后没有吧p->name 改了 
+				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",tail->name,tail->score,ctime(&(tail->time)));				
+			}
+			break;
+	}
+	return head;
+}
+//===============================================
+//删除功能 ======================================
+	//删除一个节点
+		//头删 
+
+struct Record * head_delete_one_node(struct Record *head){
+	if(empty(head))return NULL; 
+	struct Record *p;
+	p = head;
+	head = head->next;
 	
-	struct Record *p = head;
-	struct Record *pre = NULL;
-	while(p != NULL){
-		if(strcmp(p->name,target)==0){
+	free(p);
+	p=NULL;
+	return head;
+}
+		//尾删 
+struct Record *tail_delete_one_node(struct Record *head){
+	if(empty(head))return NULL; 	
+	struct Record *p=head,*pre=NULL;
+	while(p->next!=NULL){
+		pre = p;
+		p = p->next;
+	}
+	//!!!!!!最后的需要指向NULL!!!! 
+	//没有考虑到单节点的条件
+	//如果pre=NULL 还用pre->next ,就会崩溃执行 pre->next = NULL;  对 NULL 指针解引用，直接触发程序崩溃。
+	if(pre==NULL){
+		free(p);
+		head = NULL;
+	}else{
+	pre->next = NULL; 
+	free(p);
+	//！！！！！注意free后p会变成野指针，free(p) 只释放「指向的内存」，不修改「指针变量 p」，释放后 p 变为野指针 
+	p=NULL;	
+	}
+
+	return head;
+}
+
+		//按名字删
+struct Record* delete_one_node_by_name(struct Record *head){
+	if(empty(head))return NULL; 
+	char target_name[20];
+	printf("请输入要删除学员的姓名：");
+	scanf("%19s",target_name);
+	
+	struct Record *pre=NULL,*p=head;
+	int flag = 1;
+	while(p){
+		if(strcmp(target_name,p->name)==0){
 			//找到了
-			if(p == head){
-				head = p->next;
-			} else {
-				pre->next = p->next;
+			if(p==head){
+				head = head->next;
+			}else{
+				pre->next = p->next; 
 			}
 			free(p);
-			printf("学员 %s 已经成功退学\n",target);
-			return head;
+			//这里忘记写target_name了 
+			printf("找到[%s],已经成功删除\n",target_name);
+			flag = 0;
 		}
 		pre = p;
 		p = p->next;
 	}
-	printf("查无此人，无法删除。\n"); 
-	return head;
-};
-
-struct Record *delete_info(struct Record *head){
-	struct Record *p=head;
-	int std_count = 0;
-	
-	//无学员 
-	
-	//学员人数 
-	while(p!=NULL){
-		p = p->next;
-		std_count++;
-	}
-
-	//选择删除人数，批量删除 
-	int count = 0;
-	printf("请输入你要删除的学员的个数(0-%d)：\n",std_count); //提示
-	//检验 
-	while(1){
-		if(scanf("%d",&count)!=1){//如果输入的不是整数 
-			printf("请输入一个整数（0-%d）\n",std_count);
-			//清空缓存区
-			while(getchar()!='\n');
-			continue; 
-		}
-		if(count>std_count||count<0){
-			printf("输入超出范围，请重新输入（0-%d）\n",std_count);
-			scanf("%d",&count);
-		}else break;
-	}
-	
-	
-	//进行删除操作 
-	for(int i=0;i<count;i++){
-		head = delete_node(head);
-	}
-	return head;
-};
-
-void swap_data(struct Record *a,struct Record *b){
-	//交换分数
-	int temp_score;
-	temp_score = a->score;
-	a->score = b->score;
-	b->score = temp_score;
-	
-	//交换姓名 
-	char temp_name[20];
-	strcpy(temp_name,a->name);
-	strcpy(a->name,b->name);
-	strcpy(b->name,temp_name); 
-	
-	//交换时间
-	long temp_time;
-	temp_time = a->time; 
-	a->time = b->time;
-	b->time = temp_time;	 
+	if(flag == 1)printf("查无此人\n");
+	return head; 
 }
-
-void bubbleSort_records(struct Record *head){
-	if(head==NULL||head->next==NULL){
-		printf("人数不足，无需排序\n"); 
-		return;
-	} 
+		//批量删除 
+struct Record * batch_delete_node(struct Record *head){
+	if(empty(head))return NULL;
 	
-	struct Record *p,*q;
-	int swapped;
-	for(p=head;p!=NULL;p=p->next){
-		swapped = 0;
-		for(q=head;q->next!=NULL;q=q->next){
-			if(q->score<q->next->score){
-				swap_data(q,q->next);
-				swapped = 1;
-			}
-		}
-		if(!swapped)break;
-	}
-	printf("学员成绩已经排序完成（由高到低）\n");	
-		
-}
-
-void find_fail_student(struct Record *head){
-	if(head==NULL){
-		printf("暂无数据\n");
-		return;
-	}
+	int choice = 1;
+	printf("请输入你的删除方式：""头删（1） 尾删（2） 按名字删（3）\n");
+	safe_input_int(&choice,1,3);
+	
 	struct Record *p = head;
-	int count=0;
-	while(p!=NULL){
-		if(p->score<90){
-			printf("姓名：%s\t|分数：%d\n",p->name,p->score);
-			count++;
+	int cnt = 0;
+	while(p){
+		p=p->next;
+		cnt++;
+	}	
+	
+	int delete_times;
+	printf("请输入你要删除学员的人数(0-%d)：",cnt); 
+	safe_input_int(&delete_times,0,cnt);
+	
+	switch(choice){
+		case 1:
+			//把choice改成cnt才对，写快了//cnt 也不对 是delete_time才对太急了 
+			for(int i=0;i<delete_times;i++)head = head_delete_one_node(head);
+			break;
+		case 2:
+			for(int i=0;i<delete_times;i++)head = tail_delete_one_node(head);
+			break;
+		case 3:
+			for(int i=0;i<delete_times;i++)head = delete_one_node_by_name(head);
+			break;						
+	}
+	
+	return head;
+}
+//===============================================
+//修改功能 ======================================
+void find_and_modify(struct Record *head){
+	if(empty(head))return;
+	
+	char target_name[20];
+	printf("请输入你要修改的学员的姓名：");
+	scanf("%19s",target_name);
+	
+	struct Record *p = head; 
+	int flag = 1;
+	while(p){
+		if(strcmp(target_name,p->name)==0){
+			printf("找到[%s] 当前分数为 %d \n",target_name,p->score);
+			
+			printf("请输入新的分数：");
+			safe_input_int(&p->score,0,100);
+			
+			printf("修改中.....\n");
+			sleep(2);
+			printf("修改成功！姓名：%s  分数：%d\n",target_name,p->score);
+			flag = 0;
 		}
+		p = p->next;
+	}
+	
+	if(flag == 1)printf("查无此人\n");	
+} 
+//===============================================
+//查询功能 ======================================
+void inquire_info(struct Record *head){
+	if(empty(head))return;
+	
+	char target_name[20];
+	printf("请输入你要查找的学员的姓名：");
+	scanf("%19s",target_name);
+	
+	struct Record *p = head; 
+	int flag = 1;
+	while(p!=NULL){
+		if(strcmp(target_name,p->name)==0){
+
+			printf("查找中.....\n");
+			sleep(2);
+			printf("查找成功！姓名：%s  分数：%d  时间：%s",target_name,p->score,ctime(&(p->time)));
+			flag = 0;
+		}
+		p = p->next;
+	}
+	
+	if(flag == 1)printf("查无此人\n");	
+} 
+//===============================================
+//显示功能 ======================================
+void show(struct Record *head){
+	if(empty(head))return ;
+	struct Record *p = head;
+	while(p){
+		printf("【记录】：姓名：%s\t\t|分数：%d \t|时间：%s",p->name,p->score,ctime(&(p->time)));
+		p =p->next; 
+	}
+} 
+//=============================================================
+				//数据利用
+//保存数据至文件 ================================
+	
+void save_to_file(struct Record *head){
+	if(empty(head))return;
+	
+	FILE *fp = fopen("students.txt","w");
+	if(fp==NULL){
+		printf("未找到文件\n");
+		return ;
+	}
+	
+	struct Record *p = head;
+	int cnt = 0;
+	while(p){
+		fprintf(fp,"姓名：%s   | 分数：%d    |时间：%ld\n",p->name,p->score,(long)p->time);
+		cnt++;
 		p=p->next;
 	}
-	printf("共有%d人不及格\n",count);
+	
+	printf("已经将%d条信息存入硬盘\n",cnt);
+	fclose(fp);
+	
+}
+//===============================================
+//从文件中读取数据 ==============================
+
+struct Record* load_from_file(){
+	FILE *fp = fopen("students.txt","r");
+	if(fp==NULL){
+		printf("未找到文件\n");
+		return NULL; 
+	}
+	
+	char name[20];
+	int score;
+	long t;
+	int cnt = 0;
+	
+	struct Record *head=NULL,*tail = NULL;
+	while(fscanf(fp,"姓名：%s   | 分数：%d    |时间：%ld",name,&score,&t)!=EOF){
+		
+		struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
+		
+		strcpy(newNode->name,name);
+		newNode->score = score;
+		newNode->time = t;
+		newNode->next = NULL;
+		
+		if(head==NULL){
+			head = newNode;
+			tail = newNode;
+		}else{
+			tail->next = newNode;
+			tail = newNode;
+		}
+		
+		cnt++;
+	}
+	
+	printf("已从硬盘读取%d条数据\n",cnt);
+	fclose(fp);
+	
+	return head;
+}
+//================================================
+//分析数据========================================
+void swap_node_info(struct Record *p,struct Record *q){
+	char temp_name[20];
+	strcpy(temp_name,p->name);
+	strcpy(p->name,q->name);
+	strcpy(q->name,temp_name);
+	
+	int temp_score;
+	temp_score = p->score;
+	p->score = q->score;
+	q->score = temp_score;
+	
+	long temp_time;
+	temp_time = p->time;
+	p->time = q->time;
+	q->time = temp_time;
+	
 } 
 
-void search_by_name(struct Record *head){
-	if(head==NULL){
-		printf("暂无数据\n");
-		return;
+void bubble_resort_score(struct Record *head){
+	if(empty(head))return ;
+	
+	struct Record *p,*q;
+	for(p=head;p;p=p->next){
+		int swapped = 0;
+		for(q=head;q->next;q=q->next){
+			if(q->score < q->next->score ){
+				swap_node_info(q,q->next);
+				swapped = 1; 
+			} 
+		}
+		if(swapped == 0)break;
 	}
 	
-	struct Record *tp = head;
-	int count=0;
-	int cnt = 0;
-	char target_name[20];
+	printf("学员信息已按成绩（由高到低）排好序\n");
+} 
+void statistic_analysis(struct Record *head){
+	//计算平均分，分数最高最低的人，不及格的人数 
+	int sum = 0;
+	double average = 0;
+	int max,min;
+	double cnt = 0;
+	int number_of_failure = 0;
+
 	
-	printf("请输入要查询的学员的姓名:"); 
-	scanf("%s",target_name);
-	
-	while(tp!=NULL){
+	struct Record *p = head;
+	//min是后min加的忘记赋值了 
+	max = min = p->score;
+	for(;p;p=p->next){
+		sum+=p->score;
 		cnt++;
-		if(strcmp(target_name,tp->name)==0){
-			count++;
-			printf("记录【%d】: 姓名：%s\t\t|分数：%d\t\t|时间：%s",cnt,tp->name,tp->score,ctime(&(tp->time)));
-		} 
-		tp=tp->next;
+		
+		if(p->score>max)
+			max = p->score;
+		if(p->score<min)
+			min = p->score;
+		if(p->score<90)
+			number_of_failure++;
+	} 
+	
+	average = sum/cnt;
+	
+	printf("统计并分析数据结果如下：\n");
+	
+	printf("平均分：%lf\n",average);
+	
+	printf("最高分为：%d  ",max);
+	printf("最高分获得者如下：\n");
+	for(p=head;p;p=p->next){
+		if(p->score == max)printf("|%s\t",p->name);
 	}
-	if(count==0){
-		printf("暂无学员：[ %s ]的信息\n",target_name);
+	printf("\n"); 
+	
+	printf("最低分为：%d  ",min);
+	printf("最低分获得者如下：\n");
+	for(p=head;p;p=p->next){
+		if(p->score==min)printf("|%s\t",p->name);
 	}
-}
+	printf("\n");
+	
+	printf("不及格的%d人有：\n",number_of_failure);
+	for(p=head;p;p=p->next){
+		if(p->score < 90)printf("|姓名：%s\t\t分数：%d\n",p->name,p->score);
+	}
+} 
+//=============================================================
