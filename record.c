@@ -4,7 +4,8 @@
 /*
 功能函数
 一、创建功能
-要保证有一个链表 
+有头节点版 
+要保证有一个哨兵 
 二、基础功能 
 //添加 1.（从无到有） 2.从少到多
 //删除 1.（头删除）（） 
@@ -38,13 +39,11 @@ void safe_input_int(int *p,int min,int max){
 	}
 } 
 
-	//检查链表是否为空
+	//检查链表是否为空//看哨兵节点是否指向空节点 
 int empty(struct Record *head){
-	int ret=0;
-	if(head==NULL){
-		printf("链表不存在，请重试\n");
-		ret = 1;
-	}
+	int ret = 0; 
+	if(head->next==NULL) //:1 ?0;//！！！！！忘记：？ 
+	ret = 1;
 	return ret;
 }
 
@@ -58,7 +57,7 @@ int check_malloc(struct Record *node){
 	return ret; 
 } 
 
-	//释放内存 
+	//释放内存 //无需改动 
 void free_linkList(struct Record *head){
 	struct Record *p;
 	while(head){
@@ -71,17 +70,20 @@ void free_linkList(struct Record *head){
 
 //=============================================================
 				//创建链表
-//创建 
+//创建 //其他值可以不赋值 
 struct Record * create_linkList(){
-	struct Record *head = NULL;
+	struct Record * head = (struct Record*)malloc(sizeof(struct Record));
+	if(check_malloc) return NULL;
+	
+	head->next = NULL;
 	return head;
 }				
-		//有待升级，现在是无头节点版本 
+		//有头节点版本 
 //=============================================================
-				//功能函数（无头节点版本） 
+				//功能函数（右头节点版本） 
 //添加功能 =======================================
 	
-	//节点赋值函数
+	//节点赋值函数//无需改动 
 struct Record* node_assignment(struct Record *newNode){
 	
 	printf("请输入新添加学员的姓名："); 
@@ -112,12 +114,10 @@ struct Record * tail_add_one_node(struct Record *head){
 	newNode=node_assignment(newNode);
 	//挂载新节点
 	struct Record *p=head;
-	if(head == NULL) {
-		head = newNode;
-	}else{
-		while(p->next!=NULL)p=p->next;
+	//无需判断空头 
+	while(p->next!=NULL)p=p->next;
 		p->next = newNode; 
-	}
+	
 	
 	//需要在内部输出新节点的信息吗？//不需要还是保证函数的纯洁性好一点 
 	return head;
@@ -128,14 +128,12 @@ struct Record *head_add_one_node(struct Record *head){
 	if(check_malloc(newNode))return NULL;
 	
 	newNode = node_assignment(newNode);
-	
-	struct Record *p=head;
-	if(head == NULL) {
-		head = newNode;
-	}else{
-		newNode->next = head;
-		head = newNode;
-	}
+
+	//head不能动 
+	//把首元节点的地址给newNode的指针域 
+	newNode->next = head->next;
+	//再把头节点的指针域指向newNode,让newNode作为首元节点，二newNode指针域与指向前首元节点 
+	head->next = newNode;
 	
 	return head;
 }
@@ -155,23 +153,19 @@ struct Record *batch_add_node(struct Record *head){
 	printf("请输入你要添加的学员的个数：");
 	safe_input_int(&add_times,0,100);
 	int choice = add_choice();
-	struct Record *p,*tail;
+	struct Record *tail;
 	switch(choice){
 		case 1:
 			for(int i = 0;i<add_times;i++){
 				head = head_add_one_node(head);//千万记得把返回值传给head,更新head 
-				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",head->name,head->score,ctime(&(head->time)));
+				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",head->next->name,head->next->score,ctime(&(head->next->time)));
 			}
 			break;
 		case 2:
-			for(int i = 0;i<add_times;p=p->next,i++){
+			for(int i = 0;i<add_times;i++){
 				head = tail_add_one_node(head);
-				//这样太低效了，应该用tail记录尾巴指针避免重复遍历 
-				//p = head;
-				//while(p->next)p=p->next;
-				//这样做
-				if(tail==NULL)tail = head;
-				else tail = tail->next;
+				if(tail==NULL)tail = head->next;
+				tail = tail->next;
 				//改动代码后没有吧p->name 改了 
 				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",tail->name,tail->score,ctime(&(tail->time)));				
 			}
@@ -187,8 +181,9 @@ struct Record *batch_add_node(struct Record *head){
 struct Record * head_delete_one_node(struct Record *head){
 	if(empty(head))return NULL; 
 	struct Record *p;
-	p = head;
-	head = head->next;
+	
+	p = head->next;
+	head->next = p->next;
 	
 	free(p);
 	p=NULL;
@@ -197,24 +192,15 @@ struct Record * head_delete_one_node(struct Record *head){
 		//尾删 
 struct Record *tail_delete_one_node(struct Record *head){
 	if(empty(head))return NULL; 	
-	struct Record *p=head,*pre=NULL;
-	while(p->next!=NULL){
-		pre = p;
-		p = p->next;
-	}
-	//!!!!!!最后的需要指向NULL!!!! 
-	//没有考虑到单节点的条件
-	//如果pre=NULL 还用pre->next ,就会崩溃执行 pre->next = NULL;  对 NULL 指针解引用，直接触发程序崩溃。
-	if(pre==NULL){
-		free(p);
-		head = NULL;
-	}else{
-	pre->next = NULL; 
-	free(p);
-	//！！！！！注意free后p会变成野指针，free(p) 只释放「指向的内存」，不修改「指针变量 p」，释放后 p 变为野指针 
-	p=NULL;	
-	}
-
+	struct Record *p=head;
+	while(p->next->next!=NULL) p = p->next;
+	struct Record *q;
+	q = p->next;
+	p->next = q->next;
+	
+	free(q);
+	q=NULL;
+	
 	return head;
 }
 
@@ -225,26 +211,26 @@ struct Record* delete_one_node_by_name(struct Record *head){
 	printf("请输入要删除学员的姓名：");
 	scanf("%19s",target_name);
 	
-	struct Record *pre=NULL,*p=head;
-	int flag = 1;
-	while(p){
-		if(strcmp(target_name,p->name)==0){
-			//找到了
-			if(p==head){
-				head = head->next;
-			}else{
-				pre->next = p->next; 
-			}
-			free(p);
-			//这里忘记写target_name了 
-			printf("找到[%s],已经成功删除\n",target_name);
-			flag = 0;
+	struct Record *p = head;
+	
+	int is_found = 0;
+	while(p!=NULL){
+		if(strcmp(p->next->name,target_name)==0){
+			struct Record *q = p->next;
+			p->next = q->next;
+			printf("找到姓名：[%s]   分数：%d\n",target_name,p->next->score);
+			printf("删除中...\n");
+			sleep(2);
+			free(q);
+			q=NULL;//free(p->next) p->next = NULL 
+			is_found = 1;
+			break;
 		}
-		pre = p;
-		p = p->next;
+		p=p->next;
 	}
-	if(flag == 1)printf("查无此人\n");
-	return head; 
+	if(is_found==0) printf("查无此人\n");
+	
+	return head;
 }
 		//批量删除 
 struct Record * batch_delete_node(struct Record *head){
@@ -256,7 +242,7 @@ struct Record * batch_delete_node(struct Record *head){
 	
 	struct Record *p = head;
 	int cnt = 0;
-	while(p){
+	while(p->next){
 		p=p->next;
 		cnt++;
 	}	
@@ -291,16 +277,16 @@ void find_and_modify(struct Record *head){
 	
 	struct Record *p = head; 
 	int flag = 1;
-	while(p){
-		if(strcmp(target_name,p->name)==0){
-			printf("找到[%s] 当前分数为 %d \n",target_name,p->score);
+	while(p!=NULL){
+		if(strcmp(target_name,p->next->name)==0){
+			printf("找到[%s] 当前分数为 %d \n",target_name,p->next->score);
 			
 			printf("请输入新的分数：");
-			safe_input_int(&p->score,0,100);
+			safe_input_int(&p->next->score,0,100);
 			
 			printf("修改中.....\n");
 			sleep(2);
-			printf("修改成功！姓名：%s  分数：%d\n",target_name,p->score);
+			printf("修改成功！姓名：%s  分数：%d\n",target_name,p->next->score);
 			flag = 0;
 		}
 		p = p->next;
@@ -320,11 +306,11 @@ void inquire_info(struct Record *head){
 	struct Record *p = head; 
 	int flag = 1;
 	while(p!=NULL){
-		if(strcmp(target_name,p->name)==0){
+		if(strcmp(target_name,p->next->name)==0){
 
 			printf("查找中.....\n");
 			sleep(2);
-			printf("查找成功！姓名：%s  分数：%d  时间：%s",target_name,p->score,ctime(&(p->time)));
+			printf("查找成功！姓名：%s  分数：%d  时间：%s",target_name,p->next->score,ctime(&(p->next->time)));
 			flag = 0;
 		}
 		p = p->next;
@@ -338,7 +324,7 @@ void show(struct Record *head){
 	if(empty(head))return ;
 	struct Record *p = head;
 	while(p){
-		printf("【记录】：姓名：%s\t\t|分数：%d \t|时间：%s",p->name,p->score,ctime(&(p->time)));
+		printf("【记录】：姓名：%s\t\t|分数：%d \t|时间：%s",p->next->name,p->next->score,ctime(&(p->next->time)));
 		p =p->next; 
 	}
 } 
@@ -358,7 +344,7 @@ void save_to_file(struct Record *head){
 	struct Record *p = head;
 	int cnt = 0;
 	while(p){
-		fprintf(fp,"姓名：%s   | 分数：%d    |时间：%ld\n",p->name,p->score,(long)p->time);
+		fprintf(fp,"姓名：%s   | 分数：%d    |时间：%ld\n",p->next->name,p->next->score,(long)p->next->time);
 		cnt++;
 		p=p->next;
 	}
@@ -382,7 +368,10 @@ struct Record* load_from_file(){
 	long t;
 	int cnt = 0;
 	
-	struct Record *head=NULL,*tail = NULL;
+	struct Record *head = (struct Record *)malloc(sizeof(struct Record));
+	if(check_malloc(head))return NULL;
+	
+	struct Record *tail = NULL;
 	while(fscanf(fp,"姓名：%s   | 分数：%d    |时间：%ld",name,&score,&t)!=EOF){
 		
 		struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
@@ -392,8 +381,8 @@ struct Record* load_from_file(){
 		newNode->time = t;
 		newNode->next = NULL;
 		
-		if(head==NULL){
-			head = newNode;
+		if(head->next==NULL){
+			head->next = newNode;
 			tail = newNode;
 		}else{
 			tail->next = newNode;
@@ -435,8 +424,8 @@ void bubble_resort_score(struct Record *head){
 	for(p=head;p;p=p->next){
 		int swapped = 0;
 		for(q=head;q->next;q=q->next){
-			if(q->score < q->next->score ){
-				swap_node_info(q,q->next);
+			if(q->next->score < q->next->next->score ){
+				swap_node_info(q->next,q->next->next);
 				swapped = 1; 
 			} 
 		}
@@ -450,7 +439,7 @@ void statistic_analysis(struct Record *head){
 	int sum = 0;
 	double average = 0;
 	int max,min;
-	double cnt = 0;
+	double cnt = -1;
 	int number_of_failure = 0;
 
 	
@@ -458,14 +447,14 @@ void statistic_analysis(struct Record *head){
 	//min是后min加的忘记赋值了 
 	max = min = p->score;
 	for(;p;p=p->next){
-		sum+=p->score;
+		sum+=p->next->score;
 		cnt++;
 		
-		if(p->score>max)
-			max = p->score;
-		if(p->score<min)
-			min = p->score;
-		if(p->score<90)
+		if(p->next->score>max)
+			max = p->next->score;
+		if(p->next->score<min)
+			min = p->next->score;
+		if(p->next->score<90)
 			number_of_failure++;
 	} 
 	
@@ -478,20 +467,20 @@ void statistic_analysis(struct Record *head){
 	printf("最高分为：%d  ",max);
 	printf("最高分获得者如下：\n");
 	for(p=head;p;p=p->next){
-		if(p->score == max)printf("|%s\t",p->name);
+		if(p->next->score == max)printf("|%s\t",p->next->name);
 	}
 	printf("\n"); 
 	
 	printf("最低分为：%d  ",min);
 	printf("最低分获得者如下：\n");
 	for(p=head;p;p=p->next){
-		if(p->score==min)printf("|%s\t",p->name);
+		if(p->next->score==min)printf("|%s\t",p->next->name);
 	}
 	printf("\n");
 	
 	printf("不及格的%d人有：\n",number_of_failure);
 	for(p=head;p;p=p->next){
-		if(p->score < 90)printf("|姓名：%s\t\t分数：%d\n",p->name,p->score);
+		if(p->next->score < 90)printf("|姓名：%s\t\t分数：%d\n",p->next->name,p->next->score);
 	}
 } 
 //=============================================================
