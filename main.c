@@ -4,6 +4,10 @@
 
 int main(int argc, char *argv[]) {
 	struct Record *head = create_linkList();
+	if(head == NULL){ // 新增检查
+        printf("初始化失败，程序退出！\n");
+        return -1;
+    }
 	menu(head);
 	//想错了没想到用的是free(),我以为用的是free_linkList() 
 	//free(head);
@@ -28,7 +32,8 @@ void show_choice(){
 }
 
 void menu(struct Record* head){
-	while(1){
+	int flag = 1;
+	while(flag){
 		show_choice();
 		int choice=0;
 		safe_input_int(&choice,0,9);
@@ -76,8 +81,9 @@ void menu(struct Record* head){
 					sleep(2);
 					//不能用break ，用来break只会跳出switch(与case 并用的) ，而应该用exit(0); 
 					//break;
-					exit(0);
-					
+					//也不能用exit(0),会直接退出程序，导致后面的free_linkList()函数失效导致内存泄露 
+					//exit(0);
+					flag = 0; 
 				}
 				//我这里漏了一个break;现在的是后面加的 
 				break;
