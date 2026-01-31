@@ -43,7 +43,10 @@ void safe_input_int(int *p,int min,int max){
 int empty(struct Record *head){
 	int ret = 0; 
 	if(head->next==NULL) //:1 ?0;//！！！！！忘记：？ 
-	ret = 1;
+	{
+		ret = 1;
+		printf("链表为空\n"); 
+	}
 	return ret;
 }
 
@@ -73,8 +76,10 @@ void free_linkList(struct Record *head){
 //创建 //其他值可以不赋值 
 struct Record * create_linkList(){
 	struct Record * head = (struct Record*)malloc(sizeof(struct Record));
-	if(check_malloc) return NULL;
-	
+	if(check_malloc(head)){
+		printf("头节点创建失败\n"); 
+		 return NULL;
+	}
 	head->next = NULL;
 	return head;
 }				
@@ -86,15 +91,18 @@ struct Record * create_linkList(){
 	//节点赋值函数//无需改动 
 struct Record* node_assignment(struct Record *newNode){
 	
-	printf("请输入新添加学员的姓名："); 
-	scanf("%19s",newNode->name);
+	printf("请输入新添加学员的姓名：");
+	while(scanf("%NAME_MAX_LENs",newNode->name)!=1){
+		printf("请输人有效的姓名\n");
+		while(getchar()!= '\n');
+	}
 	
 	printf("请输入新添加学员的成绩：");
-	safe_input_int(&newNode->score,0,100);
+	safe_input_int(&newNode->score,SCORE_MIN_LEN,SCORE_MAX_LEN);
 	
 	newNode->time = time(NULL);
 	printf("正在录入中....\n");
-	sleep(2); 
+	sleep(SLEEP_SEC); 
 	
 	//忘记给指针域赋值了导致一直报错 
 	newNode->next = NULL; 
@@ -151,9 +159,8 @@ int add_choice(){
 struct Record *batch_add_node(struct Record *head){
 	int add_times;
 	printf("请输入你要添加的学员的个数：");
-	safe_input_int(&add_times,0,100);
+	safe_input_int(&add_times,SCORE_MIN_LEN,SCORE_MAX_LEN);
 	int choice = add_choice();
-	struct Record *tail;
 	switch(choice){
 		case 1:
 			for(int i = 0;i<add_times;i++){
@@ -164,8 +171,10 @@ struct Record *batch_add_node(struct Record *head){
 		case 2:
 			for(int i = 0;i<add_times;i++){
 				head = tail_add_one_node(head);
-				if(tail==NULL)tail = head->next;
-				tail = tail->next;
+				//不能这样，打印出来的不是要打印的记录 
+				//if(tail==NULL)tail = head->next;
+				struct Record *tail = head;
+				while(tail->next != NULL) tail = tail->next;
 				//改动代码后没有吧p->name 改了 
 				printf("【记录】：姓名：%s\t\t分数：%d\t时间：%s",tail->name,tail->score,ctime(&(tail->time)));				
 			}
@@ -209,18 +218,18 @@ struct Record* delete_one_node_by_name(struct Record *head){
 	if(empty(head))return NULL; 
 	char target_name[20];
 	printf("请输入要删除学员的姓名：");
-	scanf("%19s",target_name);
+	scanf("%NAME_MAX_LENs",target_name);
 	
 	struct Record *p = head;
 	
 	int is_found = 0;
-	while(p!=NULL){
+	while(p->next){
 		if(strcmp(p->next->name,target_name)==0){
 			struct Record *q = p->next;
 			p->next = q->next;
 			printf("找到姓名：[%s]   分数：%d\n",target_name,p->next->score);
 			printf("删除中...\n");
-			sleep(2);
+			sleep(SLEEP_SEC);
 			free(q);
 			q=NULL;//free(p->next) p->next = NULL 
 			is_found = 1;
@@ -273,19 +282,20 @@ void find_and_modify(struct Record *head){
 	
 	char target_name[20];
 	printf("请输入你要修改的学员的姓名：");
-	scanf("%19s",target_name);
+	scanf("%NAME_MAX_LENs",target_name);
 	
 	struct Record *p = head; 
 	int flag = 1;
-	while(p!=NULL){
+	//p->next;
+	while(p->next){
 		if(strcmp(target_name,p->next->name)==0){
 			printf("找到[%s] 当前分数为 %d \n",target_name,p->next->score);
 			
 			printf("请输入新的分数：");
-			safe_input_int(&p->next->score,0,100);
+			safe_input_int(&p->next->score,SCORE_MIN_LEN,SCORE_MAX_LEN);
 			
 			printf("修改中.....\n");
-			sleep(2);
+			sleep(SLEEP_SEC);
 			printf("修改成功！姓名：%s  分数：%d\n",target_name,p->next->score);
 			flag = 0;
 		}
@@ -301,15 +311,15 @@ void inquire_info(struct Record *head){
 	
 	char target_name[20];
 	printf("请输入你要查找的学员的姓名：");
-	scanf("%19s",target_name);
+	scanf("%NAME_MAX_LENs",target_name);
 	
 	struct Record *p = head; 
 	int flag = 1;
-	while(p!=NULL){
+	while(p->next){
 		if(strcmp(target_name,p->next->name)==0){
 
 			printf("查找中.....\n");
-			sleep(2);
+			sleep(SLEEP_SEC);
 			printf("查找成功！姓名：%s  分数：%d  时间：%s",target_name,p->next->score,ctime(&(p->next->time)));
 			flag = 0;
 		}
@@ -323,7 +333,8 @@ void inquire_info(struct Record *head){
 void show(struct Record *head){
 	if(empty(head))return ;
 	struct Record *p = head;
-	while(p){
+	//bug3:不能是while(p)当走到最后p->next = NULL;与无头结点的不同 
+	while(p->next){
 		printf("【记录】：姓名：%s\t\t|分数：%d \t|时间：%s",p->next->name,p->next->score,ctime(&(p->next->time)));
 		p =p->next; 
 	}
@@ -343,7 +354,9 @@ void save_to_file(struct Record *head){
 	
 	struct Record *p = head;
 	int cnt = 0;
-	while(p){
+	//老问题：我还是用了while(p) 到最后 p->next = NULL, 程序会对NULL 解引用，直接崩溃
+	//为什么我会觉得while(p)可以呢，因为我觉得p可遍历地更多，而我程序内用的又是p->next,我以为是没错的 
+	while(p->next!= NULL){
 		fprintf(fp,"姓名：%s   | 分数：%d    |时间：%ld\n",p->next->name,p->next->score,(long)p->next->time);
 		cnt++;
 		p=p->next;
@@ -368,13 +381,20 @@ struct Record* load_from_file(){
 	long t;
 	int cnt = 0;
 	
+	//建议改成现有的函数 head = create_linkList() 
 	struct Record *head = (struct Record *)malloc(sizeof(struct Record));
+	//bug1:没有给head->next赋值，出现野指针bug 
+	head->next = NULL;
+	
 	if(check_malloc(head))return NULL;
 	
 	struct Record *tail = NULL;
-	while(fscanf(fp,"姓名：%s   | 分数：%d    |时间：%ld",name,&score,&t)!=EOF){
+	//fscanf()的内容要与fprintf()的一致 
+	while(fscanf(fp,"姓名：%s   | 分数：%d    |时间：%ld\n",name,&score,&t)!=EOF){
 		
 		struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
+		//bug2这里没有检查malloc分配
+		if(check_malloc(newNode))return NULL; 
 		
 		strcpy(newNode->name,name);
 		newNode->score = score;
@@ -421,9 +441,9 @@ void bubble_resort_score(struct Record *head){
 	if(empty(head))return ;
 	
 	struct Record *p,*q;
-	for(p=head;p;p=p->next){
+	for(p=head;p->next;p=p->next){
 		int swapped = 0;
-		for(q=head;q->next;q=q->next){
+		for(q=head;q->next->next;q=q->next){
 			if(q->next->score < q->next->next->score ){
 				swap_node_info(q->next,q->next->next);
 				swapped = 1; 
@@ -435,18 +455,22 @@ void bubble_resort_score(struct Record *head){
 	printf("学员信息已按成绩（由高到低）排好序\n");
 } 
 void statistic_analysis(struct Record *head){
+	//忘记加表为空的判断
+	if(empty(head))return; 
+	
 	//计算平均分，分数最高最低的人，不及格的人数 
 	int sum = 0;
 	double average = 0;
 	int max,min;
-	double cnt = -1;
+	double cnt = 0;
 	int number_of_failure = 0;
 
 	
 	struct Record *p = head;
 	//min是后min加的忘记赋值了 
-	max = min = p->score;
-	for(;p;p=p->next){
+	max = min = p->next->score;
+	//这里还是以p作为了结尾，不行 
+	for(;p->next;p=p->next){
 		sum+=p->next->score;
 		cnt++;
 		
@@ -454,7 +478,7 @@ void statistic_analysis(struct Record *head){
 			max = p->next->score;
 		if(p->next->score<min)
 			min = p->next->score;
-		if(p->next->score<90)
+		if(p->next->score<FAIL_SCORE)
 			number_of_failure++;
 	} 
 	
@@ -466,21 +490,21 @@ void statistic_analysis(struct Record *head){
 	
 	printf("最高分为：%d  ",max);
 	printf("最高分获得者如下：\n");
-	for(p=head;p;p=p->next){
+	for(p=head;p->next;p=p->next){
 		if(p->next->score == max)printf("|%s\t",p->next->name);
 	}
 	printf("\n"); 
 	
 	printf("最低分为：%d  ",min);
 	printf("最低分获得者如下：\n");
-	for(p=head;p;p=p->next){
+	for(p=head;p->next;p=p->next){
 		if(p->next->score==min)printf("|%s\t",p->next->name);
 	}
 	printf("\n");
 	
 	printf("不及格的%d人有：\n",number_of_failure);
-	for(p=head;p;p=p->next){
-		if(p->next->score < 90)printf("|姓名：%s\t\t分数：%d\n",p->next->name,p->next->score);
+	for(p=head;p->next;p=p->next){
+		if(p->next->score < FAIL_SCORE)printf("|姓名：%s\t\t分数：%d\n",p->next->name,p->next->score);
 	}
 } 
 //=============================================================
