@@ -1,13 +1,23 @@
 #ifndef RECORD_H
 #define RECORD_H
 
-#endif
+//位置错放，应该放在最后面 
+//现在没报错是因为头文件只包含一次后续如果还要拓展功能的话，就会连编译都过不了
+// #endif
+
 
 #include<stdio.h>
 #include<time.h>
 #include<unistd.h>
 #include<string.h> 
 #include<stdlib.h>
+
+// record.h 新增宏定义
+#define NAME_MAX_LEN 19  // 留1位给'\0'
+#define SCORE_MIN 0
+#define SCORE_MAX 100
+#define FAIL_SCORE 90
+#define SLEEP_SEC 2
 
 //定义一个用于记录的结构体
 //包含姓名，分数，实际，
@@ -33,3 +43,5 @@ void bubble_resort_score(struct Record *head);
 void statistic_analysis(struct Record *head);
 void free_linkList(struct Record *head);
 void menu(struct Record *head);
+
+#endif 
