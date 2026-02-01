@@ -30,9 +30,12 @@ void safe_input_int(int *p,int min,int max){
 			while(getchar()!='\n');
 			continue; 
 		}
+		//改进 
+		while(getchar()!='\n');
 		if(*p<min || *p > max){
 			printf("输入超出范围（%d-%d）\n",min,max);
-			while(getchar()!='\n');
+			
+			//while(getchar()!='\n');// 只清除了换行符，但可能还有其他字符
 			continue;
 		}
 		break;
@@ -89,16 +92,18 @@ struct Record * create_linkList(){
 //添加功能 =======================================
 	
 	//节点赋值函数//无需改动 
-struct Record* node_assignment(struct Record *newNode){
+//这里无需返回值了，传入指针 
+void node_assignment(struct Record *newNode){
 	
 	printf("请输入新添加学员的姓名：");
-	while(scanf("%NAME_MAX_LENs",newNode->name)!=1){
+	//不能用NAME_MAX_LEN 
+	while(scanf("%19s",newNode->name)!=1){
 		printf("请输人有效的姓名\n");
 		while(getchar()!= '\n');
 	}
 	
 	printf("请输入新添加学员的成绩：");
-	safe_input_int(&newNode->score,SCORE_MIN_LEN,SCORE_MAX_LEN);
+	safe_input_int(&newNode->score,SCORE_MIN,SCORE_MAX);
 	
 	newNode->time = time(NULL);
 	printf("正在录入中....\n");
@@ -107,7 +112,6 @@ struct Record* node_assignment(struct Record *newNode){
 	//忘记给指针域赋值了导致一直报错 
 	newNode->next = NULL; 
 	
-	return newNode;
 	
 } 
 	//加一个节点(尾插)
@@ -119,7 +123,8 @@ struct Record * tail_add_one_node(struct Record *head){
 	//！！！！！忘记对malloc做空处理 !!!!!!!!封装的时候，忘记加回来了
 	 if(check_malloc(newNode))return NULL;
 		//为新的节点赋值
-	newNode=node_assignment(newNode);
+	node_assignment(newNode);
+	
 	//挂载新节点
 	struct Record *p=head;
 	//无需判断空头 
@@ -135,7 +140,7 @@ struct Record *head_add_one_node(struct Record *head){
 	struct Record *newNode = (struct Record*)malloc(sizeof(struct Record));
 	if(check_malloc(newNode))return NULL;
 	
-	newNode = node_assignment(newNode);
+	node_assignment(newNode);
 
 	//head不能动 
 	//把首元节点的地址给newNode的指针域 
@@ -159,7 +164,7 @@ int add_choice(){
 struct Record *batch_add_node(struct Record *head){
 	int add_times;
 	printf("请输入你要添加的学员的个数：");
-	safe_input_int(&add_times,SCORE_MIN_LEN,SCORE_MAX_LEN);
+	safe_input_int(&add_times,SCORE_MIN,SCORE_MAX);
 	int choice = add_choice();
 	switch(choice){
 		case 1:
@@ -219,6 +224,8 @@ struct Record* delete_one_node_by_name(struct Record *head){
 	char target_name[20];
 	printf("请输入要删除学员的姓名：");
 	scanf("%NAME_MAX_LENs",target_name);
+	//加上
+	 while(getchar() != '\n'); 
 	
 	struct Record *p = head;
 	
@@ -226,10 +233,14 @@ struct Record* delete_one_node_by_name(struct Record *head){
 	while(p->next){
 		if(strcmp(p->next->name,target_name)==0){
 			struct Record *q = p->next;
+			
+			printf("找到姓名：[%s]   分数：%d\n",target_name,q->score);
+			
 			p->next = q->next;
-			printf("找到姓名：[%s]   分数：%d\n",target_name,p->next->score);
 			printf("删除中...\n");
 			sleep(SLEEP_SEC);
+			
+			
 			free(q);
 			q=NULL;//free(p->next) p->next = NULL 
 			is_found = 1;
@@ -292,7 +303,10 @@ void find_and_modify(struct Record *head){
 			printf("找到[%s] 当前分数为 %d \n",target_name,p->next->score);
 			
 			printf("请输入新的分数：");
-			safe_input_int(&p->next->score,SCORE_MIN_LEN,SCORE_MAX_LEN);
+			safe_input_int(&p->next->score,SCORE_MIN,SCORE_MAX);
+			
+			//忘记加更新时间戳
+			p->next->time = time(NULL); 
 			
 			printf("修改中.....\n");
 			sleep(SLEEP_SEC);
