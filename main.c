@@ -1,37 +1,77 @@
 #include "record.h"
 
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
+void show_choice();
 
 int main(int argc, char *argv[]) {
-	struct Record *head = create_linkList();
-	if(head == NULL){ // 新增检查
+    struct Record *head = create_linkList();
+    
+    if(head == NULL) {
         printf("初始化失败，程序退出！\n");
         return -1;
     }
-	menu(head);
-	//想错了没想到用的是free(),我以为用的是free_linkList() 
-	//free(head);
-	free_linkList(head);
-	return 0;
+    
+    // 尝试从文件加载数据
+    printf("正在从文件中加载数据...\n");
+    sleep(SLEEP_SEC);
+    
+    struct Record *load_head = load_from_file();
+    if(load_head != NULL) {
+        // 释放初始创建的空链表
+        free_linkList(head);
+        head = load_head;
+        printf("数据加载成功！\n");
+        printf("当前学员记录如下：\n");
+        show(head);
+    } else {
+        printf("未找到数据文件，创建新的记录。\n");
+    }
+    
+    printf("\n===================================\n");
+    printf("欢迎使用驾校学员管理系统\n");
+    printf("===================================\n");
+    
+    // 进入主菜单
+    head = menu(head);
+    
+    // 退出前保存数据
+    printf("正在将当前数据保存至文件...\n");
+    save_to_file(head);
+    printf("数据保存完成！\n");
+    
+    // 释放内存
+    free_linkList(head);
+    
+    printf("\n===================================\n");
+    printf("感谢您的使用，再见！\n");
+    printf("===================================\n");
+    
+    return 0;
 }
 
+// 可以添加一些分隔线，使输出更清晰
 void show_choice(){
-	printf("=========驾校系统=========\n");
-	printf("\t1.添加记录\t\t\n");
-	printf("\t2.删除记录\t\t\n");
-	printf("\t3.保存记录\t\t\n");
-	printf("\t4.读取记录\t\t\n");
-	printf("\t5.修改记录\t\t\n");
-	printf("\t6.查询记录\t\t\n");
-	printf("\t7.展示记录\t\t\n");
-	printf("\t8.统计分析\t\t\n");
-	printf("\t9.记录排序\t\t\n");
-	printf("\t0.退出系统\t\t\n"); 
-	printf("===========================\n");
-	printf("请输入以上选项(0-9):\n"); 
+    printf("\n");
+    printf("===================================\n");
+    printf("========= 驾校学员管理系统 ========\n");
+    printf("===================================\n");
+    printf("  1. 添加学员记录\n");
+    printf("  2. 删除学员记录\n");
+    printf("  3. 保存记录到文件\n");
+    printf("  4. 从文件读取记录\n");
+    printf("  5. 修改学员记录\n");
+    printf("  6. 查询学员记录\n");
+    printf("  7. 显示所有记录\n");
+    printf("  8. 统计分析\n");
+    printf("  9. 按成绩排序\n");
+    printf("  0. 退出系统\n");
+    printf("===================================\n");
+    printf("请选择操作(0-9): ");
 }
 
-void menu(struct Record* head){
+
+//由于要保存文件内容，menu要返回正确的head 
+struct Record* menu(struct Record* head){
 	int flag = 1;
 	while(flag){
 		show_choice();
@@ -47,10 +87,24 @@ void menu(struct Record* head){
 			case 3:
 				save_to_file(head);
 				break;
+				//head 被直接覆盖，会导致内存泄漏 
+//			case 4:
+//				head = load_from_file();
+//				show(head);
+//				break;
 			case 4:
-				head = load_from_file();
-				show(head);
-				break;
+			{
+			struct Record *new_head = load_from_file();
+				if(new_head != NULL){
+					free_linkList(head);
+					head = new_head;
+					printf("数据加载成功"); 
+					show(head);
+				}else{
+					printf("数据加载失败\n");
+				}	
+			}
+			break; 
 			case 5:
 				find_and_modify(head);
 				break;
@@ -87,7 +141,19 @@ void menu(struct Record* head){
 				}
 				//我这里漏了一个break;现在的是后面加的 
 				break;
+				//补上，以防万一 
+			default:
+				printf("无效的选择，请重新输入\n");
+				break;
 		}
+		
+		// 每次操作后暂停一下，让用户看清结果
+        if(flag && choice != 0) {
+            printf("\n按Enter键继续...");
+            while(getchar() != '\n');  // 清空输入缓冲区
+            getchar();  // 等待用户按Enter
+        }
 	}
-
-}
+	
+	return head;
+ }
