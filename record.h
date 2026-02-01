@@ -42,6 +42,7 @@ struct Record* load_from_file();
 void bubble_resort_score(struct Record *head);
 void statistic_analysis(struct Record *head);
 void free_linkList(struct Record *head);
-void menu(struct Record *head);
+struct Record* menu(struct Record *head);
 
 #endif 
+
