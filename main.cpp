@@ -1,3 +1,4 @@
+//æ•°æ®ç»“æ„å¤§äºŒä¸Šè¯¾è®¾
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -5,32 +6,32 @@
 #include <string.h>
 #include <SDL2/SDL.h>
 
-/************************* ³£Á¿¶¨Òå *************************/
-// ·½Ïò£ºÉÏ¡¢ÏÂ¡¢×ó¡¢ÓÒ£¨ĞĞ¡¢ÁĞÆ«ÒÆ£©
+/************************* å¸¸é‡å®šä¹‰ *************************/
+// æ–¹å‘ï¼šä¸Šã€ä¸‹ã€å·¦ã€å³ï¼ˆè¡Œã€åˆ—åç§»ï¼‰
 #define DIR_NUM 4
 int dirs[DIR_NUM][2] = {{-2, 0}, {2, 0}, {0, -2}, {0, 2}};
-// ÃÔ¹¬ÄÑ¶È£¨¶¥µã¶ÈÊıãĞÖµ£©
+// è¿·å®«éš¾åº¦ï¼ˆé¡¶ç‚¹åº¦æ•°é˜ˆå€¼ï¼‰
 #define EASY_DEGREE 3
 #define NORMAL_DEGREE 2
 #define HARD_DEGREE 1
-// Í¼ĞÎ»¯ÅäÖÃ
-#define CELL_SIZE 30    // Ã¿¸öÃÔ¹¬¸ñ×ÓµÄÏñËØ´óĞ¡
-#define WINDOW_PADDING 50 // ´°¿ÚÄÚ±ß¾à
-// ÑÕÉ«¶¨Òå
-#define COLOR_WALL     {50, 50, 50, 255}    // Ç½±Ú£ºÉî»ÒÉ«
-#define COLOR_PATH     {255, 255, 255, 255} // Í¨Â·£º°×É«
-#define COLOR_PLAYER   {255, 0, 0, 255}     // Íæ¼Ò£ººìÉ«
-#define COLOR_OPT_PATH {255, 255, 0, 255}    // ×îÓÅÂ·¾¶£º»ÆÉ«
-#define COLOR_START    {0, 255, 0, 255}     // Æğµã£ºÂÌÉ«
-#define COLOR_END      {0, 0, 255, 255}     // ÖÕµã£ºÀ¶É«
+// å›¾å½¢åŒ–é…ç½®
+#define CELL_SIZE 30    // æ¯ä¸ªè¿·å®«æ ¼å­çš„åƒç´ å¤§å°
+#define WINDOW_PADDING 50 // çª—å£å†…è¾¹è·
+// é¢œè‰²å®šä¹‰
+#define COLOR_WALL     {50, 50, 50, 255}    // å¢™å£ï¼šæ·±ç°è‰²
+#define COLOR_PATH     {255, 255, 255, 255} // é€šè·¯ï¼šç™½è‰²
+#define COLOR_PLAYER   {255, 0, 0, 255}     // ç©å®¶ï¼šçº¢è‰²
+#define COLOR_OPT_PATH {255, 255, 0, 255}    // æœ€ä¼˜è·¯å¾„ï¼šé»„è‰²
+#define COLOR_START    {0, 255, 0, 255}     // èµ·ç‚¹ï¼šç»¿è‰²
+#define COLOR_END      {0, 0, 255, 255}     // ç»ˆç‚¹ï¼šè“è‰²
 
-/************************* Êı¾İ½á¹¹¶¨Òå *************************/
-// ×ø±ê½á¹¹Ìå
+/************************* æ•°æ®ç»“æ„å®šä¹‰ *************************/
+// åæ ‡ç»“æ„ä½“
 typedef struct {
-    int x, y;  // ĞĞ¡¢ÁĞ£¨ÃÔ¹¬Íø¸ñ×ø±ê£©
+    int x, y;  // è¡Œã€åˆ—ï¼ˆè¿·å®«ç½‘æ ¼åæ ‡ï¼‰
 } Point;
 
-// Õ»£¨DFSÉú³ÉÃÔ¹¬£©
+// æ ˆï¼ˆDFSç”Ÿæˆè¿·å®«ï¼‰
 typedef struct StackNode {
     Point p;
     struct StackNode* next;
@@ -39,7 +40,7 @@ typedef struct {
     StackNode* top;
 } Stack;
 
-// Á´±í£¨¹ì¼£/×îÓÅÂ·¾¶£©
+// é“¾è¡¨ï¼ˆè½¨è¿¹/æœ€ä¼˜è·¯å¾„ï¼‰
 typedef struct ListNode {
     Point p;
     struct ListNode* next;
@@ -50,7 +51,7 @@ typedef struct {
     int len;
 } List;
 
-// A*Ëã·¨ÓÅÏÈ¶ÓÁĞ½Úµã
+// A*ç®—æ³•ä¼˜å…ˆé˜Ÿåˆ—èŠ‚ç‚¹
 typedef struct AStarNode {
     Point p;
     int g, h, f;
@@ -62,7 +63,7 @@ typedef struct {
     int capacity;
 } PriorityQueue;
 
-// ÃÔ¹¬ºËĞÄ½á¹¹Ìå
+// è¿·å®«æ ¸å¿ƒç»“æ„ä½“
 typedef struct {
     int** grid;
     int rows, cols;
@@ -72,14 +73,14 @@ typedef struct {
     Point player;
     List player_path;
     List opt_path;
-    // SDLÏà¹Ø
+    // SDLç›¸å…³
     SDL_Window* window;
     SDL_Renderer* renderer;
-    int window_width;  // ´°¿Ú¿í¶È
-    int window_height; // ´°¿Ú¸ß¶È
+    int window_width;  // çª—å£å®½åº¦
+    int window_height; // çª—å£é«˜åº¦
 } Maze;
 
-/************************* Õ»²Ù×÷º¯Êı *************************/
+/************************* æ ˆæ“ä½œå‡½æ•° *************************/
 void stack_init(Stack* s) { s->top = NULL; }
 bool stack_is_empty(Stack* s) { return s->top == NULL; }
 void stack_push(Stack* s, Point p) {
@@ -98,7 +99,7 @@ Point stack_pop(Stack* s) {
 }
 void stack_destroy(Stack* s) { while (!stack_is_empty(s)) stack_pop(s); }
 
-/************************* Á´±í²Ù×÷º¯Êı *************************/
+/************************* é“¾è¡¨æ“ä½œå‡½æ•° *************************/
 void list_init(List* list) { list->head = list->tail = NULL; list->len = 0; }
 void list_add(List* list, Point p) {
     ListNode* node = (ListNode*)malloc(sizeof(ListNode));
@@ -137,7 +138,7 @@ Point list_get_last(List* list) {
     return p;
 }
 
-/************************* ÓÅÏÈ¶ÓÁĞ²Ù×÷£¨A*£© *************************/
+/************************* ä¼˜å…ˆé˜Ÿåˆ—æ“ä½œï¼ˆA*ï¼‰ *************************/
 void pq_init(PriorityQueue* pq, int capacity) {
     pq->nodes = (AStarNode*)malloc(sizeof(AStarNode) * capacity);
     pq->size = 0;
@@ -174,36 +175,36 @@ AStarNode pq_pop(PriorityQueue* pq) {
 }
 void pq_destroy(PriorityQueue* pq) { free(pq->nodes); }
 
-/************************* ÃÔ¹¬ºËĞÄº¯Êı *************************/
-// ³õÊ¼»¯ÃÔ¹¬£¨º¬SDL´°¿Ú£©
+/************************* è¿·å®«æ ¸å¿ƒå‡½æ•° *************************/
+// åˆå§‹åŒ–è¿·å®«ï¼ˆå«SDLçª—å£ï¼‰
 void maze_init(Maze* maze, int rows, int cols, int degree) {
-    // È·±£ÃÔ¹¬³ß´çÎªÆæÊı
+    // ç¡®ä¿è¿·å®«å°ºå¯¸ä¸ºå¥‡æ•°
     maze->rows = (rows % 2 == 0) ? rows + 1 : rows;
     maze->cols = (cols % 2 == 0) ? cols + 1 : cols;
     maze->degree = degree;
 
-    // ¼ÆËã´°¿Ú´óĞ¡
+    // è®¡ç®—çª—å£å¤§å°
     maze->window_width = maze->cols * CELL_SIZE + 2 * WINDOW_PADDING;
-    maze->window_height = maze->rows * CELL_SIZE + 2 * WINDOW_PADDING + 50; // Ô¤ÁôÎÄ×ÖÇøÓò
+    maze->window_height = maze->rows * CELL_SIZE + 2 * WINDOW_PADDING + 50; // é¢„ç•™æ–‡å­—åŒºåŸŸ
 
-    // ³õÊ¼»¯SDL´°¿ÚºÍäÖÈ¾Æ÷
+    // åˆå§‹åŒ–SDLçª—å£å’Œæ¸²æŸ“å™¨
     SDL_Init(SDL_INIT_VIDEO);
     maze->window = SDL_CreateWindow(
-        "ÃÔ¹¬Éú³ÉÓëÂ·¾¶¹æ»®ÓÎÏ·",
+        "è¿·å®«ç”Ÿæˆä¸è·¯å¾„è§„åˆ’æ¸¸æˆ",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         maze->window_width, maze->window_height,
         SDL_WINDOW_SHOWN
     );
     maze->renderer = SDL_CreateRenderer(maze->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-    // ·ÖÅäÃÔ¹¬Íø¸ñÄÚ´æ
+    // åˆ†é…è¿·å®«ç½‘æ ¼å†…å­˜
     maze->grid = (int**)malloc(sizeof(int*) * maze->rows);
     for (int i = 0; i < maze->rows; i++) {
         maze->grid[i] = (int*)malloc(sizeof(int) * maze->cols);
         for (int j = 0; j < maze->cols; j++) maze->grid[i][j] = 1;
     }
 
-    // ÉèÖÃÆğµã¡¢ÖÕµã¡¢Íæ¼ÒÎ»ÖÃ
+    // è®¾ç½®èµ·ç‚¹ã€ç»ˆç‚¹ã€ç©å®¶ä½ç½®
     maze->start = (Point){1, 1};
     maze->end = (Point){maze->rows - 2, maze->cols - 2};
     maze->player = maze->start;
@@ -212,7 +213,7 @@ void maze_init(Maze* maze, int rows, int cols, int degree) {
     list_init(&maze->opt_path);
 }
 
-// Íø¸ñ×ø±ê×ª´°¿ÚÏñËØ×ø±ê
+// ç½‘æ ¼åæ ‡è½¬çª—å£åƒç´ åæ ‡
 SDL_Point grid_to_pixel(Point p) {
     SDL_Point pixel;
     pixel.x = WINDOW_PADDING + p.y * CELL_SIZE;
@@ -220,12 +221,12 @@ SDL_Point grid_to_pixel(Point p) {
     return pixel;
 }
 
-// ¼ì²é×ø±êºÏ·¨ĞÔ
+// æ£€æŸ¥åæ ‡åˆæ³•æ€§
 bool is_valid(Point p, int rows, int cols) {
     return p.x >= 0 && p.x < rows && p.y >= 0 && p.y < cols;
 }
 
-// ¼ÆËã¶¥µã¶ÈÊı
+// è®¡ç®—é¡¶ç‚¹åº¦æ•°
 int calc_degree(Maze* maze, Point p) {
     int degree = 0;
     for (int i = 0; i < DIR_NUM; i++) {
@@ -235,7 +236,7 @@ int calc_degree(Maze* maze, Point p) {
     return degree;
 }
 
-// DFSÉú³ÉÃÔ¹¬
+// DFSç”Ÿæˆè¿·å®«
 void maze_generate(Maze* maze) {
     srand((unsigned int)time(NULL));
     Stack stack;
@@ -246,7 +247,7 @@ void maze_generate(Maze* maze) {
 
     while (!stack_is_empty(&stack)) {
         Point cur = stack_pop(&stack);
-        // Ëæ»ú´òÂÒ·½Ïò
+        // éšæœºæ‰“ä¹±æ–¹å‘
         for (int i = 0; i < DIR_NUM; i++) {
             int r = rand() % DIR_NUM;
             int temp[2] = {dirs[i][0], dirs[i][1]};
@@ -273,7 +274,7 @@ void maze_generate(Maze* maze) {
     stack_destroy(&stack);
 }
 
-// A*Ëã·¨²éÕÒ×îÓÅÂ·¾¶
+// A*ç®—æ³•æŸ¥æ‰¾æœ€ä¼˜è·¯å¾„
 void maze_find_opt_path(Maze* maze) {
     list_clear(&maze->opt_path);
     int rows = maze->rows, cols = maze->cols;
@@ -326,14 +327,14 @@ void maze_find_opt_path(Maze* maze) {
         }
     }
 
-    // »ØËİÉú³É×îÓÅÂ·¾¶
+    // å›æº¯ç”Ÿæˆæœ€ä¼˜è·¯å¾„
     if (found) {
         Point p = maze->end;
         while (p.x != -1 && p.y != -1) {
             list_add(&maze->opt_path, p);
             p = parent[p.x][p.y];
         }
-        // ·´×ªÁ´±í
+        // åè½¬é“¾è¡¨
         ListNode *prev = NULL, *cur = maze->opt_path.head, *next;
         while (cur != NULL) {
             next = cur->next;
@@ -345,7 +346,7 @@ void maze_find_opt_path(Maze* maze) {
         maze->opt_path.head = prev;
     }
 
-    // ÊÍ·ÅÄÚ´æ
+    // é‡Šæ”¾å†…å­˜
     pq_destroy(&pq);
     for (int i = 0; i < rows; i++) {
         free(visited[i]);
@@ -355,7 +356,7 @@ void maze_find_opt_path(Maze* maze) {
     free(visited); free(g_val); free(parent);
 }
 
-// Íæ¼ÒÒÆ¶¯
+// ç©å®¶ç§»åŠ¨
 bool player_move(Maze* maze, char dir) {
     Point cur = maze->player;
     Point next = cur;
@@ -374,7 +375,7 @@ bool player_move(Maze* maze, char dir) {
     return false;
 }
 
-// Íæ¼Ò»ØËİ
+// ç©å®¶å›æº¯
 bool player_back(Maze* maze) {
     if (maze->player_path.len <= 1) return false;
     list_remove_last(&maze->player_path);
@@ -382,37 +383,37 @@ bool player_back(Maze* maze) {
     return true;
 }
 
-// »æÖÆÃÔ¹¬£¨ºËĞÄÍ¼ĞÎ»¯º¯Êı£©
+// ç»˜åˆ¶è¿·å®«ï¼ˆæ ¸å¿ƒå›¾å½¢åŒ–å‡½æ•°ï¼‰
 void maze_render(Maze* maze) {
-    // Çå¿ÕäÖÈ¾Æ÷
-    SDL_SetRenderDrawColor(maze->renderer, 20, 20, 20, 255); // ±³¾°É«£ºÇ³ºÚÉ«
+    // æ¸…ç©ºæ¸²æŸ“å™¨
+    SDL_SetRenderDrawColor(maze->renderer, 20, 20, 20, 255); // èƒŒæ™¯è‰²ï¼šæµ…é»‘è‰²
     SDL_RenderClear(maze->renderer);
 
-    // »æÖÆÃÔ¹¬Íø¸ñ
+    // ç»˜åˆ¶è¿·å®«ç½‘æ ¼
     for (int i = 0; i < maze->rows; i++) {
         for (int j = 0; j < maze->cols; j++) {
             Point p = {i, j};
             SDL_Point pixel = grid_to_pixel(p);
             SDL_Rect rect = {pixel.x, pixel.y, CELL_SIZE, CELL_SIZE};
 
-            // »æÖÆÇ½±Ú/Í¨Â·
+            // ç»˜åˆ¶å¢™å£/é€šè·¯
             if (maze->grid[i][j] == 1) {
                 SDL_SetRenderDrawColor(maze->renderer, COLOR_WALL);
                 SDL_RenderFillRect(maze->renderer, &rect);
             } else {
                 SDL_SetRenderDrawColor(maze->renderer, COLOR_PATH);
                 SDL_RenderFillRect(maze->renderer, &rect);
-                // »æÖÆ¸ñ×Ó±ß¿ò£¨ÔöÇ¿ÊÓ¾õĞ§¹û£©
+                // ç»˜åˆ¶æ ¼å­è¾¹æ¡†ï¼ˆå¢å¼ºè§†è§‰æ•ˆæœï¼‰
                 SDL_SetRenderDrawColor(maze->renderer, 200, 200, 200, 255);
                 SDL_RenderDrawRect(maze->renderer, &rect);
             }
 
-            // ±ê¼ÇÆğµã
+            // æ ‡è®°èµ·ç‚¹
             if (i == maze->start.x && j == maze->start.y) {
                 SDL_SetRenderDrawColor(maze->renderer, COLOR_START);
                 SDL_RenderFillRect(maze->renderer, &rect);
             }
-            // ±ê¼ÇÖÕµã
+            // æ ‡è®°ç»ˆç‚¹
             if (i == maze->end.x && j == maze->end.y) {
                 SDL_SetRenderDrawColor(maze->renderer, COLOR_END);
                 SDL_RenderFillRect(maze->renderer, &rect);
@@ -420,14 +421,14 @@ void maze_render(Maze* maze) {
         }
     }
 
-    // »æÖÆ×îÓÅÂ·¾¶
+    // ç»˜åˆ¶æœ€ä¼˜è·¯å¾„
     if (maze->opt_path.len > 0) {
         SDL_SetRenderDrawColor(maze->renderer, COLOR_OPT_PATH);
         ListNode* cur = maze->opt_path.head;
         while (cur != NULL && cur->next != NULL) {
             SDL_Point p1 = grid_to_pixel(cur->p);
             SDL_Point p2 = grid_to_pixel(cur->next->p);
-            // Â·¾¶Ïß¾ÓÖĞ
+            // è·¯å¾„çº¿å±…ä¸­
             p1.x += CELL_SIZE / 2; p1.y += CELL_SIZE / 2;
             p2.x += CELL_SIZE / 2; p2.y += CELL_SIZE / 2;
             SDL_RenderDrawLine(maze->renderer, p1.x, p1.y, p2.x, p2.y);
@@ -435,13 +436,13 @@ void maze_render(Maze* maze) {
         }
     }
 
-    // »æÖÆÍæ¼Ò£¨Ô²ĞÎ£©
+    // ç»˜åˆ¶ç©å®¶ï¼ˆåœ†å½¢ï¼‰
     SDL_Point player_pixel = grid_to_pixel(maze->player);
     int player_radius = CELL_SIZE / 3;
     int center_x = player_pixel.x + CELL_SIZE / 2;
     int center_y = player_pixel.y + CELL_SIZE / 2;
     SDL_SetRenderDrawColor(maze->renderer, COLOR_PLAYER);
-    // »æÖÆÊµĞÄÔ²£¨SDLÎŞÖ±½Ó»­Ô²º¯Êı£¬ÓÃ¾ØĞÎÄ£Äâ£©
+    // ç»˜åˆ¶å®å¿ƒåœ†ï¼ˆSDLæ— ç›´æ¥ç”»åœ†å‡½æ•°ï¼Œç”¨çŸ©å½¢æ¨¡æ‹Ÿï¼‰
     for (int r = 0; r < player_radius; r++) {
         for (int angle = 0; angle < 360; angle += 5) {
             float rad = angle * M_PI / 180;
@@ -451,74 +452,74 @@ void maze_render(Maze* maze) {
         }
     }
 
-    // »æÖÆÌáÊ¾ÎÄ×Ö£¨¼ò»¯°æ£¬ÈçĞèÍêÕûÎÄ×ÖäÖÈ¾¿É¼ÓSDL_ttf£©
+    // ç»˜åˆ¶æç¤ºæ–‡å­—ï¼ˆç®€åŒ–ç‰ˆï¼Œå¦‚éœ€å®Œæ•´æ–‡å­—æ¸²æŸ“å¯åŠ SDL_ttfï¼‰
     char info[256];
-    sprintf(info, "W/S/A/D:ÒÆ¶¯ | B:»ØËİ | F:Ñ°Â· | Q:ÍË³ö | ²½Êı:%d | ×îÓÅÂ·¾¶:%d",
+    sprintf(info, "W/S/A/D:ç§»åŠ¨ | B:å›æº¯ | F:å¯»è·¯ | Q:é€€å‡º | æ­¥æ•°:%d | æœ€ä¼˜è·¯å¾„:%d",
             maze->player_path.len - 1, maze->opt_path.len - 1);
     SDL_SetRenderDrawColor(maze->renderer, 255, 255, 255, 255);
-    // ÎÄ×ÖÇøÓò£¨¼ò»¯Îª±³¾°Ìõ£©
+    // æ–‡å­—åŒºåŸŸï¼ˆç®€åŒ–ä¸ºèƒŒæ™¯æ¡ï¼‰
     SDL_Rect text_bg = {WINDOW_PADDING/2, maze->window_height - 40, maze->window_width - WINDOW_PADDING, 30};
     SDL_SetRenderDrawColor(maze->renderer, 30, 30, 30, 255);
     SDL_RenderFillRect(maze->renderer, &text_bg);
 
-    // ¸üĞÂ»­Ãæ
+    // æ›´æ–°ç”»é¢
     SDL_RenderPresent(maze->renderer);
 }
 
-// Ïú»ÙÃÔ¹¬£¨ÊÍ·ÅËùÓĞ×ÊÔ´£©
+// é”€æ¯è¿·å®«ï¼ˆé‡Šæ”¾æ‰€æœ‰èµ„æºï¼‰
 void maze_destroy(Maze* maze) {
-    // ÊÍ·ÅÃÔ¹¬Íø¸ñ
+    // é‡Šæ”¾è¿·å®«ç½‘æ ¼
     for (int i = 0; i < maze->rows; i++) free(maze->grid[i]);
     free(maze->grid);
-    // ÊÍ·ÅÁ´±í
+    // é‡Šæ”¾é“¾è¡¨
     list_clear(&maze->player_path);
     list_clear(&maze->opt_path);
-    // ÊÍ·ÅSDL×ÊÔ´
+    // é‡Šæ”¾SDLèµ„æº
     SDL_DestroyRenderer(maze->renderer);
     SDL_DestroyWindow(maze->window);
     SDL_Quit();
 }
 
-/************************* Ö÷º¯Êı *************************/
+/************************* ä¸»å‡½æ•° *************************/
 int main() {
     Maze maze;
     int rows, cols, difficulty;
 
-    // ³õÊ¼»¯ÅäÖÃ
-    printf("===== Í¼ĞÎ»¯ÃÔ¹¬ÓÎÏ· =====\n");
-    printf("ÇëÊäÈëÃÔ¹¬³ß´ç£¨Èç10 10£¬½¨Òé5-20£©£º");
+    // åˆå§‹åŒ–é…ç½®
+    printf("===== å›¾å½¢åŒ–è¿·å®«æ¸¸æˆ =====\n");
+    printf("è¯·è¾“å…¥è¿·å®«å°ºå¯¸ï¼ˆå¦‚10 10ï¼Œå»ºè®®5-20ï¼‰ï¼š");
     scanf("%d %d", &rows, &cols);
-    printf("ÇëÑ¡ÔñÄÑ¶È£¨1=¼òµ¥ 2=ÆÕÍ¨ 3=À§ÄÑ£©£º");
+    printf("è¯·é€‰æ‹©éš¾åº¦ï¼ˆ1=ç®€å• 2=æ™®é€š 3=å›°éš¾ï¼‰ï¼š");
     scanf("%d", &difficulty);
     int degree = EASY_DEGREE;
     if (difficulty == 2) degree = NORMAL_DEGREE;
     else if (difficulty == 3) degree = HARD_DEGREE;
 
-    // ³õÊ¼»¯ÃÔ¹¬ºÍSDL
+    // åˆå§‹åŒ–è¿·å®«å’ŒSDL
     maze_init(&maze, rows, cols, degree);
-    printf("ÕıÔÚÉú³ÉÃÔ¹¬...\n");
+    printf("æ­£åœ¨ç”Ÿæˆè¿·å®«...\n");
     maze_generate(&maze);
 
-    // ÓÎÏ·Ö÷Ñ­»·
+    // æ¸¸æˆä¸»å¾ªç¯
     bool running = true;
     SDL_Event event;
     while (running) {
-        // äÖÈ¾ÃÔ¹¬
+        // æ¸²æŸ“è¿·å®«
         maze_render(&maze);
 
-        // ¼ì²éÊÇ·ñµ½´ïÖÕµã
+        // æ£€æŸ¥æ˜¯å¦åˆ°è¾¾ç»ˆç‚¹
         if (maze.player.x == maze.end.x && maze.player.y == maze.end.y) {
-            printf("?? ¹§Ï²£¡µ½´ïÖÕµã£¡\n");
+            printf("?? æ­å–œï¼åˆ°è¾¾ç»ˆç‚¹ï¼\n");
             running = false;
             break;
         }
 
-        // ´¦ÀíSDLÊÂ¼ş
+        // å¤„ç†SDLäº‹ä»¶
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-            // ¼üÅÌ°´¼üÊÂ¼ş
+            // é”®ç›˜æŒ‰é”®äº‹ä»¶
             if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_w: case SDLK_W:
@@ -539,11 +540,12 @@ int main() {
                 }
             }
         }
-        SDL_Delay(16); // ¿ØÖÆÖ¡ÂÊ£¨Ô¼60FPS£©
+        SDL_Delay(16); // æ§åˆ¶å¸§ç‡ï¼ˆçº¦60FPSï¼‰
     }
 
-    // Ïú»Ù×ÊÔ´
+    // é”€æ¯èµ„æº
     maze_destroy(&maze);
-    printf("?? ÓÎÏ·ÍË³ö£¡\n");
+    printf("?? æ¸¸æˆé€€å‡ºï¼\n");
     return 0;
 }
+
