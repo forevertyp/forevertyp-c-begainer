@@ -1,0 +1,31 @@
+# Project: 驾校系统2.0
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = main.o record.o
+LINKOBJ  = main.o record.o
+LIBS     = -L"D:/devC++/devc++/Dev-Cpp/MinGW64/lib" -L"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -L"C:/SDL2-2.28.5/SDL2-2.28.5/x86_64-w64-mingw32/lib" -static-libgcc -lSDL2main -lSDL2 -luser32 -lgdi32 -lkernel32 -g3
+INCS     = -I"D:/devC++/devc++/Dev-Cpp/MinGW64/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/SDL2-2.28.5/SDL2-2.28.5/x86_64-w64-mingw32/include"
+CXXINCS  = -I"D:/devC++/devc++/Dev-Cpp/MinGW64/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"C:/SDL2-2.28.5/SDL2-2.28.5/x86_64-w64-mingw32/include"
+BIN      = 驾校系统2.0.exe
+CXXFLAGS = $(CXXINCS) -g3 -g -std=c99
+CFLAGS   = $(INCS) -g3 -g -std=c99
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CC) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.c
+	$(CC) -c main.c -o main.o $(CFLAGS)
+
+record.o: record.c
+	$(CC) -c record.c -o record.o $(CFLAGS)
