@@ -1,0 +1,26 @@
+# 编译输出文件
+*.o
+*.out
+*.exe
+*.a
+*.so
+*.dylib
+
+# C/C++ 特定的文件
+*.dblite
+.DS_Store
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.cproject
+
+# 调试文件
+*.gch
+
+# 可执行文件
+a.out
