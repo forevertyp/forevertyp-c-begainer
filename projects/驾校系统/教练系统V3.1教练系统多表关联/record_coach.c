@@ -103,7 +103,10 @@ Coach* coach_tail_add_node(Coach* coach_head){
 	}
 	
 	Coach* coach_new_node = (Coach*)malloc(sizeof(Coach));
-	
+	if(coach_new_node==NULL){
+		printf("新节点内存分配失败\n");
+		return coach_head;
+	}
 	//赋值 
 	coach_new_node->coach_id = get_cid(coach_head);
 	
@@ -112,6 +115,13 @@ Coach* coach_tail_add_node(Coach* coach_head){
 		printf("请输入正确的姓名！\n");
 		while(getchar()!='\n');
 	}
+	
+	coach_new_node->student_count = 0;
+	
+	for(int i=0;i<MAX_STU_NUM;i++){
+		coach_new_node->student[i] = -1;
+	}
+	
 	coach_new_node->next = NULL;
 
 	printf("正在录入中...");
@@ -137,7 +147,7 @@ Coach* coach_tail_add_node(Coach* coach_head){
 //====================================
 //根据CID删除节点
 Coach* coach_cid_delete_node(Coach* coach_head){
-	if(empty_coach(coach_head))return NULL;
+	if(empty_coach(coach_head))return coach_head;
 	
 	int cid=2000; 
 	printf("请输入你要删除的教练的id:");
@@ -152,7 +162,7 @@ Coach* coach_cid_delete_node(Coach* coach_head){
 			printf("正在删除中...\n");
 			sleep(SLEEP_SEC);
 			Coach* q = p->next;
-			p=q->next;
+			p->next=q->next;
 			free(q);
 			q=NULL;
 			break; 
@@ -173,8 +183,8 @@ Coach* coach_cid_delete_node(Coach* coach_head){
 
 //====================================
 //根据CID查询教练信息
-void coach_inquire_by_cid(Coach* coach_head){
-	if(empty_coach(coach_head))return NULL;
+void coach_inquire_by_cid(Coach* coach_head,Record *head){
+	if(empty_coach(coach_head))return ;
 	
 	int cid=2000; 
 	printf("请输入你要查找的教练的id:");
@@ -188,7 +198,18 @@ void coach_inquire_by_cid(Coach* coach_head){
 			printf("正在查询中...\n");
 			sleep(SLEEP_SEC);
 			printf("找到CID:【%d】 姓名为%s 的驾校教练\n",cid,p->next->coach_name);
-			//有待添加学员信息 
+			printf("名下学员信息：\n");
+			Record *stu_p = head->next;
+			int cnt = 0 ; 
+			while(stu_p){
+				if(stu_p->coach_id==cid){
+					cnt++;
+					printf("%d: UID:%d 姓名：%s\n",cnt,stu_p->user_id,stu_p->name);	
+				}
+				if(cnt==p->next->student_count)break;
+				
+				stu_p=stu_p->next;
+			} 
 		}
 		p=p->next;
 	} 
@@ -200,15 +221,27 @@ void coach_inquire_by_cid(Coach* coach_head){
 
 //====================================
 //查询所有教练信息 
-void show_all_coach(Coach *coach_head){
+void show_all_coach(Coach *coach_head,Record *head){
 	if(empty_coach(coach_head))return ;
 	Coach* p = coach_head->next;
 	printf("以下是所有教练的信息\n\n");
 	while(p){
 		printf("|CID:【%d】 姓名为%s 的驾校教练|\n",p->coach_id,p->coach_name);
-		//学员信息待展示 
-		p=p->next;
-	}
+		printf("名下学员信息：\n");
+		Record *stu_p = head->next;
+		int cnt = 0 ; 
+		while(stu_p){
+				if(stu_p->coach_id==p->coach_id){
+					cnt++;
+					printf("%d: UID:%d 姓名：%s\n",cnt,stu_p->user_id,stu_p->name);	
+				}
+				if(cnt==p->next->student_count)break;
+				
+				stu_p=stu_p->next;
+			}
+			p=p->next;
+		}
+		
 	return ;
 }
 
@@ -241,6 +274,7 @@ void coach_modify(Coach *coach_head){
 			//还没有什么好更改的 
 			break;
 		}
+		p=p->next;
 	} 
 	if(is_found==0)printf("查无此教练\n");
 }
@@ -261,7 +295,7 @@ void coach_save_to_file (Coach *coach_head){
 	
 	int cnt_coach = get_coach_linkList_len(coach_head); 
 	fwrite(&cnt_coach,sizeof(int),1,fp);
-	fwrite(Coach,sizeof(Coach),1,fp);
+	fwrite(coach_head,sizeof(Coach),1,fp);
 	
 	fclose(fp);
 	printf("已将%d条教练信息保存至硬盘\n",cnt_coach);
@@ -335,12 +369,40 @@ Coach* coach_load_from_file(){
 	printf("成功从文件中读取%d个教练的信息\n",cnt_coach);
 	return coach_head;
 	
-	return coach_head;
 } 
 
-
-
-
-
-
-
+void assign_coach_to_student(Record *stu_head,Coach *coach_head){
+	if(empty(stu_head)||empty_coach(coach_head))  return ;
+	 
+	int stu_id,coach_id;
+	printf("请输入你要分配教练的学员id:");
+	safe_input_int(&stu_id,10001,get_uid(stu_head)-1);
+	
+	Coach *p = coach_head->next;
+	Record *stu_p=stu_head->next;
+	printf("请输入教练id:");
+	safe_input_int(&coach_id,2001,get_cid(coach_head)-1);
+	int is_found = 0;
+	while(p){
+		if(p->coach_id==coach_id){
+			if(p->student_count>=MAX_STU_NUM){
+				printf("每个教练最多只能带%d个学员，这个教练不能再有学员了\n",MAX_STU_NUM);
+				printf("请重新进行操作\n");
+				return;
+			}else{
+				is_found=1;
+				while(stu_p->user_id!=stu_id)stu_p=stu_p->next;
+				stu_p->coach_id = coach_id;
+				p->student_count++;
+				p->student[p->student_count-1]=stu_id;
+				printf("分配成功\n");
+				break;
+			}
+			
+		}
+		p=p->next;
+	}
+	
+	if(is_found==0)printf("查无此教练\n");
+	return;
+}

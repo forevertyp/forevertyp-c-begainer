@@ -16,6 +16,7 @@
 #define STATUS_COUNT 5 
 //====教练相关=======
 #define CID_START 2001
+#define MAX_STU_NUM 5
 
 typedef enum{
 	SUBJECT_1,
@@ -52,6 +53,8 @@ static const char* status_names[] = {
 typedef struct Coach{
 	int coach_id;
 	char coach_name[20];
+	int student_count;
+	int student[MAX_STU_NUM];
 	struct Coach *next; 
 }Coach;
 //================================================ 
@@ -59,6 +62,7 @@ typedef struct Coach{
 
 typedef struct Record{
 	int user_id;
+	int coach_id;
 	char name[20];
 	int scores[SUBJECT_COUNT];//每科的成绩 
 	time_t time;

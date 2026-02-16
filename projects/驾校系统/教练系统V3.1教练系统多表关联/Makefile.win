@@ -6,12 +6,12 @@ CC       = gcc.exe
 WINDRES  = windres.exe
 OBJ      = main.o record_statistic.o record_add.o record_base.o record_delete.o record_file.o record_inquire.o record_modify.o record_operation.o record_coach.o
 LINKOBJ  = main.o record_statistic.o record_add.o record_base.o record_delete.o record_file.o record_inquire.o record_modify.o record_operation.o record_coach.o
-LIBS     = -L"D:/devC++/devc++/Dev-Cpp/MinGW64/lib" -L"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -luser32 -lgdi32 -lkernel32
-INCS     = -I"D:/devC++/devc++/Dev-Cpp/MinGW64/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
-CXXINCS  = -I"D:/devC++/devc++/Dev-Cpp/MinGW64/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/devC++/devc++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+LIBS     = -L"D:/DevCpp/Dev-Cpp/MinGW64/lib" -L"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"D:/DevCpp/Dev-Cpp/MinGW64/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"D:/DevCpp/Dev-Cpp/MinGW64/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
 BIN      = 驾校系统V3.1教练系统多表关联.exe
-CXXFLAGS = $(CXXINCS) -g -std=c99 -Wall
-CFLAGS   = $(INCS) -g -std=c99 -Wall
+CXXFLAGS = $(CXXINCS) -std=c99
+CFLAGS   = $(INCS) -std=c99
 RM       = rm.exe -f
 
 .PHONY: all all-before all-after clean clean-custom

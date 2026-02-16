@@ -23,6 +23,9 @@ void assignment_node(Record *new_node){
 	//时间戳
 	new_node->time = time(NULL);
 	
+	//分配教练,初始化为没有分配 
+	new_node->coach_id = -1; 
+	
 	//指针域置空
 	new_node->next = NULL; 
 	
