@@ -62,6 +62,18 @@ int AddBook(int bn);
 int DelBook(int bn);
 void OutputOnebook(int i);
 void OutputAllbooks(int bn);
-void OutputBrief(int bn);  
+void OutputBrief(int bn); 
+
+//==============学生信息管理模块===================
+void InputOnestud(int i);
+int LoadStud(void);
+void SaveOnestud(int i);
+void SaveAllstuds(int sn);
+int OriginalStud(void);
+void ModifyStud(int sn);
+int AddStud(int sn);
+int DelStud(int sn);
+void OutputOnestud(int i);
+void OutputAllstuds(int sn); 
 
 #endif 

@@ -190,3 +190,133 @@ void ModifyBook(int bn){
 		 getchar(); 
 	}         //end while(c1)
 } 
+//=============================================================
+//功能：添加图书信息
+//参数：bn表示添加前的图书数量
+//返回：添加后的图书数量
+//主要思路：调用InputOnebook函数输入要添加的图书信息，再用fwrite将其写入文件
+//=============================================================
+int AddBook(int bn){
+	char c='y';
+	FILE *fb;
+	if((fb=fopen("book.dat","wb"))==NULL){
+		printf("can`t open file book.dat\n");
+	}
+	while(c=='y'||c=='Y'){
+		printf("\n 请输入新增图书的信息：\n");
+		InputOnebook(bn);
+		fwrite(&book[bn],SBOOK_LEN,1,fb);
+		bn++;
+		printf("\n 继续输入其他新图书的信息吗？\n");
+		c=getchar();
+		getchar();
+	}
+	printf("\n 按任意键继续！\n");
+	getchar();
+	fclsoe(fb);
+	return bn;
+} 
+
+//==============================================================
+//功能：删除图书信息
+//参数：bn表示删除前的信息
+//返回：删除后的图书数量
+//主要思路：先输入要删除的图书好，找到该书后进行删除操作，在调用SaveAllbooks
+//			函数将删除后的图书写入文件中
+//=============================================================
+int DelBook(int bn){
+	int i,k=-1;
+	char isbn[20];
+	char c1='y',c2;
+	if(bn==0){
+		printf("\n 图书信息为空，无法执行操作\n");
+		return bn;
+	}
+	while(c1=='y'||c1=='Y'){
+		c2='n';
+		printf("\n 请输入要删除的图书书号：");gets(isbn);
+		for(i=0;i<bn;i++)
+			if(strcmp(book[i].ISBN,isbn)==0){
+				k = i;
+				break;
+			}
+			if(k<0)printf("\n 请重新输入书号 \n");
+			else{
+				printf("\n 显示该图书的信息：\n");
+				OutputOnebook(k);
+				printf("确定要删除改天图书的全部信息吗？（y/n):");
+				c2=getchar();
+				getchar();
+				if(c2=='y'){
+					for(i=k;i<bn;i++){
+						book[i]=book[i+1];
+					}
+					bn--;
+					printf("\n成功删除\n");
+				}
+				else printf("\n 取消删除成功\n");
+				printf("\n 继续删除其他图书信息吗？（y/n):");
+				c1=getchar();
+				getchar();
+			}
+	}
+	SaveAllbooks(bn);
+	printf("\n 按任意键继续 \n");
+	getchar();
+	return bn; 
+} 
+
+//=============================================================
+//功能：输出一本图书的全部信息
+//参数：i表示对第i本书进行输出操作
+//返回：无
+//主要思路：用printf函数输出一本图书的全部信息
+//=============================================================
+void OutputOnebook(int i){
+	printf("\n");
+	printf("书号：");puts(book[i].ISBN);
+	printf("书名：");puts(book[i].bookname);
+	printf("作者：");puts(book[i].author);
+	printf("图书分类：");puts(book[i].bookclass);
+	printf("总量：");printf("%d\n",book[i].total_num);
+	printf("库存量：");printf("%d\n",book[i].stock_num);
+	printf("单价："); printf("%.2f\n",book[i].price);
+	printf("出版社：");puts(book[i].publisher);
+	printf("出版时间：");
+	printf("%d.%d\n",book[i].publish_time.year,book[i].publish_time.month);  
+}
+
+//============================================================
+//功能：输出全部图书的信息
+//参数：bn表示图书的数量
+//返回：无
+//主要思路：通过for循环多次调用OutputOnebook函数输出全部图书的信息
+//============================================================
+void OutputAllbooks(int bn){
+	int i;
+	printf("\n 全部图书的详细信息 \n");
+	for(i=0;i<bn;i++){
+		OutputOnebook(i);
+		printf("\n 按任意键继续!\n");getchar();
+	}
+	printf("\n 全部图书信息输出完毕。\n");
+	printf("\n 按任意键返回\n");getchar();
+} 
+
+//============================================================
+//功能：以列表方式输出全部图书的简要信息
+//参数：bn表示图书的数量
+//返回：无
+//主要思路：用for循环输出全部的简要信息（书号、书名、作者、库存量）
+//============================================================
+void OutputBrief(int bn){
+	int i;
+	printf("\n 全部图书的简要信息：\n");
+	printf("\n 序号				书号				书名			作者	库存量\n");
+	for(i=0;i<bn;i++){
+		  printf("%2d %-18s %-20",i+1,book[i].ISBN，book[i].bookname);
+		  printf("  %-8s  %2d\n",book[i].author,book[i].stock_num);
+	}
+	printf("\n 按任意键继续！\n");getch();
+} 
+
