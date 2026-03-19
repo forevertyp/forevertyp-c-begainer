@@ -13,6 +13,7 @@ void ManagerLogin(int *pbn,int *psn){
 	char password[11];
 	printf("请输入密码：");
 	fgets(password,11,stdin);
+	password[strcspn(password,"\n")]=0; 
 	if(strcmp(password,"123456")!=0){
 		printf("\n密码错误\n");
 		return;
@@ -33,20 +34,20 @@ void ManagerLogin(int *pbn,int *psn){
 			case 1: *pbn = OriginalBook(); break;
 			case 2:  ModifyBook(*pbn); break;
 			case 3: *pbn=AddBook(*pbn) ; break;
-			case 4: *pbn = DelBook(); break;
+			case 4: *pbn = DelBook(*pbn); break;
 			case 5: printf("输出详细信息请按'1',输入简要信息请按'2':");
 					scanf("%d",&flag);
 					getchar();
-					if(flag==1) OutputAllBook(*pbn);
-					else if(flag==2)OutputAllBook(*pbn);
+					if(flag==1) OutputAllbooks(*pbn);
+					else if(flag==2)OutputBrief(*pbn);
 					else printf("输入错误，返回菜单\n");
 					break;
 			case 6: SearchMenu(*pbn); break;
-			case 7: *psn=OriginalStdu(); break;
+			case 7: *psn=OriginalStud(); break;
 			case 8: ModifyStud(*psn); break;
 			case 9:*psn = AddStud(*psn);break;
 			case 10:*psn = DelStud(*psn);break;
-			case 11:OutputAllstud(*psn);break;
+			case 11:OutputAllstuds(*psn);break;
 			case 0:return;
 			default:printf("\n 输入错误，请重新选择！\n"); 
 			 
@@ -68,7 +69,7 @@ void StudentLogin(int bn ,int sn){
 	}
 	while(1){
 		printf("\n请输入你的学号：");
-		fgets(snum,11,stdin);
+		gets(snum);
 		for(j=0;j<sn;j++){
 			if(strcmp(student[j].num,snum)==0){
 				m = j;

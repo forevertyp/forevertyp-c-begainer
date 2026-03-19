@@ -44,19 +44,19 @@ typedef struct book{
 #define BOOKNUM 1000
 #define STUDNUM 100
 
-SSTUD student[STUDNUM] = {0};//设置为零表示什么嘛
-SBOOK book[BOOKNUM] = {0};
+extern SSTUD student[STUDNUM];
+extern SBOOK book[BOOKNUM];
 
 //===============用户登录模块=====================
 void ManagerLogin(int *pbn,int *psn);
 void StudentLogin(int bn,int sn); 
 
 //==============图书信息管理模块==================
-void InputOneBook(int i);
+void InputOnebook(int i);
 int LoadBooks(void);
-void Saveonebook(int i); 
+void SaveOnebook(int i); 
 void SaveAllbooks(int bn);
-int originalBook(void);
+int OriginalBook(void);
 void ModifyBook(int bn);
 int AddBook(int bn);
 int DelBook(int bn);
@@ -66,7 +66,7 @@ void OutputBrief(int bn);
 
 //==============学生信息管理模块===================
 void InputOnestud(int i);
-int LoadStud(void);
+int LoadStuds(void);
 void SaveOnestud(int i);
 void SaveAllstuds(int sn);
 int OriginalStud(void);
@@ -75,5 +75,18 @@ int AddStud(int sn);
 int DelStud(int sn);
 void OutputOnestud(int i);
 void OutputAllstuds(int sn); 
+
+
+//==============图书查询模块=======================
+void SearchMenu(int bn);
+void SearchBname(int bn);
+void SearchAuthor(int bn);
+void SearchBclass(int bn);
+void SearchPublisher(int bn);
+void SearchPubtime(int bn); 
+
+//===============图书借阅模块========================
+void BorrowBook(int bn,int m);
+void ReturnBook(int bn,int m); 
 
 #endif 

@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = main.o register.o book.o
-LINKOBJ  = main.o register.o book.o
+OBJ      = main.o register.o book.o student.o book_inquire.o book_borrow.o
+LINKOBJ  = main.o register.o book.o student.o book_inquire.o book_borrow.o
 LIBS     = -L"D:/DevCpp/Dev-Cpp/MinGW64/lib" -L"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
 INCS     = -I"D:/DevCpp/Dev-Cpp/MinGW64/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
 CXXINCS  = -I"D:/DevCpp/Dev-Cpp/MinGW64/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/DevCpp/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
@@ -32,3 +32,12 @@ register.o: register.c
 
 book.o: book.c
 	$(CC) -c book.c -o book.o $(CFLAGS)
+
+student.o: student.c
+	$(CC) -c student.c -o student.o $(CFLAGS)
+
+book_inquire.o: book_inquire.c
+	$(CC) -c book_inquire.c -o book_inquire.o $(CFLAGS)
+
+book_borrow.o: book_borrow.c
+	$(CC) -c book_borrow.c -o book_borrow.o $(CFLAGS)

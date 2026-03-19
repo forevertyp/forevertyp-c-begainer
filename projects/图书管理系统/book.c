@@ -1,4 +1,4 @@
-# include "library"
+# include "library.h"
 //以下为图书管理模块的函数定义
 //===============================================
 //功能：从键盘输入一本图书的全部信息
@@ -7,10 +7,10 @@
 //主要思路：按提示信息用scanf输入图书的各项信息，存放到数组book中
 //===============================================
 void InputOnebook(int i){
-	printf("书号：");gets(book[i].ISBN,);
+	printf("书号：");gets(book[i].ISBN);
 	printf("书名：");gets(book[i].bookname);
 	printf("作者：");gets(book[i].author);
-	printf("图书分类：")gets(book[i].bookclass);
+	printf("图书分类：");gets(book[i].bookclass);
 	printf("总量：");scanf("%d",&book[i].total_num);getchar();
 	book[i].stock_num = book[i].total_num;
 	printf("单价：");
@@ -33,8 +33,8 @@ void InputOnebook(int i){
 
 int LoadBooks(void){
 	FILE *fb; int bn = 0;
-	if(fb=fopen("book.dat","rb+")==NULL){
-		printf("Can`t open file book.dat\n")return bn; 
+	if((fb=fopen("book.dat","rb+"))==NULL){
+		printf("Can`t open file book.dat\n");return bn; 
 	}
 	while(!feof(fb))
 		if(fread(&book[bn],SBOOK_LEN,1,fb)) bn++;
@@ -42,25 +42,7 @@ int LoadBooks(void){
 	return bn; 
 } 
 
-//=======================================================
-//功能：从文件book.dat中载入全部图书信息
-//参数：无
-//返回：返回文件中图书的数量
-//主要思路：用while循环从文件中读取图书信息到数字book中，同时统计图书数量
-//=======================================================
-int LoadBooks(void){
-	FILE *fb;
-	int bn = 0;
-	if((fb=fopen("book.dat","rb+"))==NULL){
-		printf("Can`t open file book.dat\n");
-		return bn;
-	}
-	while(!feof(fb)){
-		if(fread(&book[bn],SBOOK_LEN,1,fb)) bn++;
-	}
-	fclose(fb);
-	return bn;
-} 
+
 
 //=======================================================
 //功能：将一本图书的信息保存到文件book.dat中
@@ -74,7 +56,7 @@ void SaveOnebook(int i){
 		printf("Can`t open file book.dat\n");
 		return ;
 	} 
-	fseek(fb,SBOOK_LENI*i,0);
+	fseek(fb,SBOOK_LEN*i,0);
 	fwrite(&book[i],SBOOK_LEN,1,fb);
 	fclose(fb);
 	return ;
@@ -89,7 +71,7 @@ void SaveOnebook(int i){
 //=======================================================
 void SaveAllbooks(int bn){
 	FILE *fb;
-	if((fb=open("book.dat","wb"))==NULL){
+	if((fb=fopen("book.dat","wb"))==NULL){
 		printf("Can`t open file book.dat\n");
 		return ; 
 	}
@@ -114,7 +96,7 @@ int OriginalBook(void){
 		c=getchar();
 		getchar();
 	}
-	Saveallbooks(n);
+	SaveAllbooks(n);
 	return n; 
 } 
 
@@ -129,7 +111,7 @@ void ModifyBook(int bn){
 	char isbn[20],c1='y',c2;
 	if(bn==0){
 		printf("\n图书信息为空，无法执行操作\n");
-		return bn;
+		return ;
 	}
 	while(c1=='y'||c1=='Y'){
 		c2='y';
@@ -154,15 +136,15 @@ void ModifyBook(int bn){
 				printf("\t 4.出版社\t9.出版时间\n");
 				printf("\t 5.图书分类\n"); 
 				printf("---------------------------------------");
-				printf("\n 请选择要修改的数据项（1-9）：")；
+				printf("\n 请选择要修改的数据项（1-9）：");
 				scanf("%d",&select);getchar();
 				switch(select){
-					case 1:printf("书号：")gets(book[k].ISBN);break;
-					case 2:printf("书名：")gets(book[k].bookname);break;
-					case 3:printf("作者：")gets(book[k].author);break;
-					case 4:printf("出版社：")gets(book[k].publisher);break;
-					case 5:printf("图书分类：")gets(book[k].bookclass);break;
-					case 6:printf("总量：")scanf("%d",&book[k].total_num);getchar();
+					case 1:printf("书号：");gets(book[k].ISBN);break;
+					case 2:printf("书名：");gets(book[k].bookname);break;
+					case 3:printf("作者：");gets(book[k].author);break;
+					case 4:printf("出版社：");gets(book[k].publisher);break;
+					case 5:printf("图书分类：");gets(book[k].bookclass);break;
+					case 6:printf("总量：");scanf("%d",&book[k].total_num);getchar();
 					book[k].stock_num = book[k].total_num;
 					break;
 					case 7:printf("库存量：");
@@ -199,7 +181,7 @@ void ModifyBook(int bn){
 int AddBook(int bn){
 	char c='y';
 	FILE *fb;
-	if((fb=fopen("book.dat","wb"))==NULL){
+	if((fb=fopen("book.dat","rb+"))==NULL){
 		printf("can`t open file book.dat\n");
 	}
 	while(c=='y'||c=='Y'){
@@ -213,7 +195,7 @@ int AddBook(int bn){
 	}
 	printf("\n 按任意键继续！\n");
 	getchar();
-	fclsoe(fb);
+	fclose(fb);
 	return bn;
 } 
 
@@ -244,7 +226,7 @@ int DelBook(int bn){
 			else{
 				printf("\n 显示该图书的信息：\n");
 				OutputOnebook(k);
-				printf("确定要删除改天图书的全部信息吗？（y/n):");
+				printf("确定要删除该图书的全部信息吗？（y/n):");
 				c2=getchar();
 				getchar();
 				if(c2=='y'){
@@ -314,7 +296,7 @@ void OutputBrief(int bn){
 	printf("\n 全部图书的简要信息：\n");
 	printf("\n 序号				书号				书名			作者	库存量\n");
 	for(i=0;i<bn;i++){
-		  printf("%2d %-18s %-20",i+1,book[i].ISBN，book[i].bookname);
+		  printf("%2d %-18s %-20s",i+1,book[i].ISBN,book[i].bookname);
 		  printf("  %-8s  %2d\n",book[i].author,book[i].stock_num);
 	}
 	printf("\n 按任意键继续！\n");getch();
