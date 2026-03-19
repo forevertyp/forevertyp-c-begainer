@@ -115,7 +115,7 @@ void ModifyStud(int sn){
 				OutputOnestud(k);
 				while(c2=='y'||c2=='Y'){
 					printf("\n 学生信息包含以下数据项 \n");
-					printf("-------------------------------");
+					printf("-------------------------------\n");
 					printf("\t 1.学号\n");
 					printf("\t 2.姓名\n");
 					printf("\t 3.借书卡\n");
@@ -200,11 +200,28 @@ int DelStud(int sn){
 		else{
 			printf("\n 显示该学生信息 \n");
 			OutputOnestud(k);
-			printf("确定要删除该图书的信息吗？（y/n）:");
+			printf("确定要删除该学生的信息吗？（y/n）:");
 			c2=getchar();
-			getch(); 
+			getch();
+			if(c2=='y'){
+				for(i=k;i<sn;i++){
+					student[i]=student[i+1];
+				}
+				sn--;
+				printf("\n删除成功\n");
+			}
+			else{
+				printf("\n 取消删除成功 \n");
+			} 
+			printf("\n 继续删除其他学生信息吗？(y/n):");
+			c1=getchar();
+			getchar();
 		}
 	}
+	SaveAllstuds(sn);
+	printf("\n 按任意键继续 \n");
+	getchar();
+	return sn; 
 } 
 
 //=======================================================
@@ -221,10 +238,10 @@ void OutputOnestud(int i){
 	for(j=0,t=0;j<5;j++){
 		if(student[i].card[j].flag) t++;
 	}
-	if(t==0)printf("你的借书卡均为空！\n");
+	if(t==0)printf("借书卡均为空！\n");
 	else{
 		printf("已借图书信息如下：\n");
-		printf("          书号                       借阅时间\n");
+		printf("       书号      借阅时间\n");
 		for(j=0;j<5;j++){
 			if(student[i].card[j].flag){
 				printf("   %-20s",student[i].card[j].ISBN);

@@ -20,8 +20,8 @@ void BorrowBook(int bn,int m){
 					if(strcmp(book[i].ISBN,isbn)==0){
 						k=i;break;
 					}
-				}
-				if(k>0){
+				
+				if(k>=0){
 					if(book[k].stock_num>0){
 						book[k].stock_num--;
 						student[m].card[j].flag=1;
@@ -36,31 +36,28 @@ void BorrowBook(int bn,int m){
 							student[m].card[j].bor_time.day=d.tm_mday;  
 							SaveOnebook(k);
 							SaveOnestud(m);
-							printf("\n 你已成功借阅该书籍 \n"); 
-						
+							printf("\n 你已成功借阅该书籍 \n");
 					}
 					else{
 						printf("\n 抱歉！该书的库存量为0，无法借阅 \n");
-						break;
+						break;    //终止for(j)循环 
 					}
 						
 				}
 				else{
 					printf("输入的图书号有误，请重新输入！\n");
 					j--;
-					continue;}
-		}
-					
-		
-	}
+					}
+			}//end for(i) 
+		}//end for(flag)
+	 }//end for(j) 
 	if(j==5){
 			printf("\n 你已借5本书籍，无法多借");
 			break; 
 		}
-		
 		printf("\n 要继续借书吗？（y/n):");
 		c=getch();
-		getchar(); 
+		getchar();	 
 	}//end while
 	printf("\n 按任意键继续！\n");
 	getch();

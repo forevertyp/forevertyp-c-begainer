@@ -62,7 +62,7 @@ void SearchBname(int bn){
 			}
 			if(j==1)printf("\n 抱歉！没有相应的图书信息");
 		}
-		printf("\n 继续查询其他图书的信息吗 \n");
+		printf("\n 继续查询其他图书的信息吗(y/n):");
 		c=getchar();getchar(); 
 	}
 	printf("\n 请按任意键继续 \n"); getch(); 
@@ -101,7 +101,7 @@ void SearchAuthor(int bn){
 			}
 			if(j==1)printf("\n 抱歉！没有相应的图书信息");
 		}
-		printf("\n 继续查询其他图书的信息吗 \n");
+		printf("\n 继续查询其他图书的信息吗(y/n):");
 		c=getchar();getchar(); 
 	}
 	printf("\n 请按任意键继续 \n"); getch(); 
@@ -129,7 +129,7 @@ void SearchBclass(int bn){
 			}
 		}
 		if(k==-1)printf("\n 抱歉！没有相应的图书的信息 \n");
-		printf("\n 继续查询其他图书的信息吗 \n");
+		printf("\n 继续查询其他图书的信息吗(y/n):");
 		c=getchar();getchar();
 	}
 	 printf("\n 请按任意键继续 \n"); getch();

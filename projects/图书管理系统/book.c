@@ -123,13 +123,13 @@ void ModifyBook(int bn){
 			}
 		}
 		if(k<0)
-			printf("书号错误，请重新输入书号");
+			printf("书号错误，请重新输入书号\n");
 		else{
 			printf("\n 显示此图书信息：\n");
 			OutputOnebook(k);
 			while(c2=='y'||c2=='Y'){
 				printf("\n 图书信息包含以下数据项 \n");
-				printf("---------------------------------------");
+				printf("---------------------------------------\n");
 				printf("\t 1.书号 \t6.总量\n");
 				printf("\t 2.书名 \t7.库存量\n");
 				printf("\t 3.作者 \t8.单价\n");
@@ -142,7 +142,7 @@ void ModifyBook(int bn){
 					case 1:printf("书号：");gets(book[k].ISBN);break;
 					case 2:printf("书名：");gets(book[k].bookname);break;
 					case 3:printf("作者：");gets(book[k].author);break;
-					case 4:printf("出版社：");gets(book[k].publisher);break;
+					case 4:printf("出版社：");gets(book[k].publisher);strcat(book[k].publisher,"出版社");break;
 					case 5:printf("图书分类：");gets(book[k].bookclass);break;
 					case 6:printf("总量：");scanf("%d",&book[k].total_num);getchar();
 					book[k].stock_num = book[k].total_num;
@@ -189,7 +189,7 @@ int AddBook(int bn){
 		InputOnebook(bn);
 		fwrite(&book[bn],SBOOK_LEN,1,fb);
 		bn++;
-		printf("\n 继续输入其他新图书的信息吗？\n");
+		printf("\n 继续输入其他新图书的信息吗？(y/n):");
 		c=getchar();
 		getchar();
 	}
@@ -294,9 +294,9 @@ void OutputAllbooks(int bn){
 void OutputBrief(int bn){
 	int i;
 	printf("\n 全部图书的简要信息：\n");
-	printf("\n 序号				书号				书名			作者	库存量\n");
+	printf("\n序号	 书号	        书名	            作者   库存量\n");
 	for(i=0;i<bn;i++){
-		  printf("%2d %-18s %-20s",i+1,book[i].ISBN,book[i].bookname);
+		  printf("%-3d %-18s %-20s",i+1,book[i].ISBN,book[i].bookname);
 		  printf("  %-8s  %2d\n",book[i].author,book[i].stock_num);
 	}
 	printf("\n 按任意键继续！\n");getch();
